@@ -23,8 +23,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       
-      - name: Setup MySQL
-        uses: mirromutth/mysql-action@v1.1
+      - name: Start MariaDB
+        uses: getong/mariadb-action@v1.1
         with:
           mysql database: 'HEAT' 
           mysql user: 'test'
