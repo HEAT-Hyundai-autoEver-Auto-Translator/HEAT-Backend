@@ -2,8 +2,6 @@ version: 0.0
 os: linux
 files:
   - source:  /
-    destination: /home/ubuntu/build
-file_exits_behaviour: OVERWRITE
 hooks:
   BeforeInstall:
     - location: scripts/docker_clear.sh
