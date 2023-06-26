@@ -22,6 +22,11 @@ jobs:
       
       - name: Check out repository code
         uses: actions/checkout@v3
+        
+      - name: Checkout submodules
+        run: |
+          git submodule init
+          git submodule update
       
       - name: Start MariaDB
         uses: getong/mariadb-action@v1.1
