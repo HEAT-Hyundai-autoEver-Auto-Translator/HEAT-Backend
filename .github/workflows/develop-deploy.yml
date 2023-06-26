@@ -22,17 +22,18 @@ jobs:
       
       - name: Check out repository code
         uses: actions/checkout@v3
-        
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       
-      - name: set the env
-        run: export $(cat env/.env | xargs)
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: 'HEAT' 
+          mysql user: 'test'
+          mysql password: '1234'
         
-      - name: List files in the repository
+      - name: Gradle build test
         run: ./gradlew build
         
-      - name: zip the build file
+      - name: Zip the build file
         run: zip -r ./$PROJECT_NAME.zip .
         shell: bash
         
