@@ -1,7 +1,14 @@
-name: HEAT GitHub Actions
+name: Test GitHub Actions
 run-name: ${{ github.actor }} is updating new version with GitHub Actions 🚀
+
+env:
+  PROJECT_NAME: CI-CD-TEST
+  BUCKET_NAME: heat-backend-s3
+  CODE_DEPLOY_APP: heat-backend-application
+  CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
+  
 on:
-  pull_request:
+  push:
     branches:
       - 'main'
 jobs:
@@ -11,11 +18,39 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      
       - name: Check out repository code
         uses: actions/checkout@v3
+        
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      
       - name: List files in the repository
-      - run: ./gradlew build
-      - run: ls build/libs
+        run: ./gradlew build
+        
+      - name: zip the build file
+        run: zip -r ./$PROJECT_NAME.zip .
+        shell: bash
+        
+      # aws 인증서비스
+      # github repository에서 Setting에서 사용할 암호화된 변수
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION}}
+
+      # Upload to S3 stroage
+      - name: Upload to S3
+        run: aws s3 cp $PROJECT_NAME.zip s3://$BUCKET_NAME/deploy/$PROJECT_NAME.zip --region ap-northeast-2  
+        
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      # CodeDeploy에게 배포 명령을 내린다.
+      - name: Code Deploy
+        run: >
+         aws deploy create-deployment --application-name $CODE_DEPLOY_APP
+         --deployment-config-name CodeDeployDefault.AllAtOnce
+         --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP
+         --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=deploy/$PROJECT_NAME.zip
