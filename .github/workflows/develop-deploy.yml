@@ -2,7 +2,7 @@ name: Test GitHub Actions
 run-name: ${{ github.actor }} is updating new version with GitHub Actions 🚀
 
 env:
-  PROJECT_NAME: CI-CD-TEST
+  PROJECT_NAME: HEAT-BACKEND
   BUCKET_NAME: heat-backend-s3
   CODE_DEPLOY_APP: heat-backend-application
   CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
@@ -10,7 +10,7 @@ env:
 on:
   push:
     branches:
-      - 'main'
+      - 'HEAT-20'
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
