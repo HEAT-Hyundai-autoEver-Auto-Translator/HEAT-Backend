@@ -14,25 +14,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "translation", indexes = @Index(name = "idx_user_account_no", columnList = "user_account_no"))
 public class Translation {
 
-    @Id @GeneratedValue
-    @Column(name = "translation_no")
-    private Long id;
+    @Id
+    @GeneratedValue
+    private Long translationNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_account_no")
-    private User user;
+    private User userAccountNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_language_no")
-    private Language requestLanguage;
+    private Language requestLanguageNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_language_no")
-    private Language resultLanguage;
+    private Language resultLanguageNo;
 
     private Timestamp createDatetime;
     private String requestText;

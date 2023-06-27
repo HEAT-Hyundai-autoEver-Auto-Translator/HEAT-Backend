@@ -10,10 +10,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Language {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Integer languageId;
     private String languageName;
 }
