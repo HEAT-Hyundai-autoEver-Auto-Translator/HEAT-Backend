@@ -1,6 +1,7 @@
 package com.hyundaiautoever.HEAT.v1.entity;
 
 import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -35,7 +36,9 @@ public class Translation {
     @JoinColumn(name = "result_language_no")
     private Language resultLanguageNo;
 
+    @Column(columnDefinition = "TEXT")
     private String requestText;
+    @Column(columnDefinition = "TEXT")
     private String resultText;
     private Timestamp createDatetime;
 }

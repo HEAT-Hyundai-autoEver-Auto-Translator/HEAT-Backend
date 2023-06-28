@@ -1,4 +1,4 @@
-package com.hyundaiautoever.HEAT.v1.service;
+package com.hyundaiautoever.HEAT.v1.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Getter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpenAiResponse {
+public class OpenAIResponseDto {
 
     @Getter
     private List<Choice> choices;

@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TranslationRepository extends JpaRepository<Translation, Long> {
 
+    @Override
+    List<Translation> findAll();
+
+    Translation findByTranslationNo(Long translationNo);
+
     List<Translation> findByUser(User user);
 
     List<Translation> findByRequestLanguageNo(Integer requestLanguageNo);
