@@ -25,7 +25,7 @@ public class Translation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_account_no")
-    private User userAccountNo;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_language_no")

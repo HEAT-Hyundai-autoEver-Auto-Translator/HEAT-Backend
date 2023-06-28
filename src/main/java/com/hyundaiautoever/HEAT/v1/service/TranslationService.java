@@ -10,11 +10,14 @@ import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
+import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.TranslationRepository;
 import com.hyundaiautoever.HEAT.v1.repository.UserRepository;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Request;
@@ -60,20 +63,17 @@ public class TranslationService {
             throw new RuntimeException(e);
         }
         saveResultTranslation = saveTranslationRequest(requestTranslationDto, openAiResponse);
-
-        log.info(saveResultTranslation.toString());
-
-        TranslationDto translationDto = TranslationDto.builder()
-            .translationNo(saveResultTranslation.getTranslationNo())
-            .userId(saveResultTranslation.getUserAccountNo().getUserId())
-            .requestLanguageName(saveResultTranslation.getRequestLanguageNo().getLanguageName())
-            .resultLanguageName(saveResultTranslation.getResultLanguageNo().getLanguageName())
-            .createDateTime(saveResultTranslation.getCreateDatetime())
-            .requestText(saveResultTranslation.getRequestText())
-            .resultText(saveResultTranslation.getResultText())
-            .build();
-
+        TranslationDto translationDto = new TranslationDto(saveResultTranslation);
         return translationDto;
+    }
+
+    public List<TranslationDto> getUserTranslationHistory(String userId){
+        List<Translation> userTranslationHistory= translationRepository.findByUser(userRepository.findByUserId(userId));
+        List<TranslationDto> userTranslationDtoHistory = new ArrayList<>();
+        for (Translation translation : userTranslationHistory) {
+            userTranslationDtoHistory.add(new TranslationDto(translation));
+        }
+        return userTranslationDtoHistory;
     }
 
     private Language detectLanguageType(RequestTranslationDto requestTranslationDto) throws IOException {
@@ -86,7 +86,7 @@ public class TranslationService {
         OpenAiResponse openAiResponse) throws IOException {
         Translation saveRequestTranslation = new Translation();
 
-        saveRequestTranslation.setUserAccountNo(userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo()));
+        saveRequestTranslation.setUser(userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo()));
         saveRequestTranslation.setRequestLanguageNo(detectLanguageType(requestTranslationDto));
         saveRequestTranslation.setResultLanguageNo(languageRepository.findByLanguageNo(requestTranslationDto.getRequestLanguageNo()));
         saveRequestTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));

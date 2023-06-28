@@ -26,13 +26,14 @@ public class TranslationController {
     private final TranslationService translationService;
 
     @GetMapping("/translation")
-    public TranslationDto getTranslationAPI(@RequestBody RequestTranslationDto requestTranslationDto)
+    public TranslationDto getTranslationResult(@RequestBody RequestTranslationDto requestTranslationDto)
         throws IOException {
         TranslationDto translationDto = translationService.getTranslationDto(requestTranslationDto);
         return translationDto;
     }
 
-//    public List<TranslationDto> getUserTranslationHistory (@PathVariable Long userAccountNo){
-//
-//    }
+    @GetMapping("/translation/{userId}")
+    public List<TranslationDto> getUserTranslationHistory(@PathVariable String userId) throws IOException{
+        return translationService.getUserTranslationHistory(userId);
+    }
 }
