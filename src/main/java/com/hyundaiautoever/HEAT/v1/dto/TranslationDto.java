@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 public class TranslationDto {
 
-    private Integer translationNo;
+    private Long translationNo;
     private String userId;
     private String requestLanguageName;
     private String resultLanguageName;

@@ -1,4 +1,4 @@
-package com.hyundaiautoever.HEAT.v1.entitiy;
+package com.hyundaiautoever.HEAT.v1.entity;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -10,6 +10,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
