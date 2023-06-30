@@ -10,6 +10,8 @@ import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.TranslationRepository;
+import java.io.IOException;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -25,18 +27,27 @@ import org.springframework.web.client.RestTemplate;
 public class OpenAIService {
 
     @Value("${env.open-ai.key}")
-    private String OPEN_AI_KEY;
+    private static String OPEN_AI_KEY;
     @Value("${env.open-ai.uri}")
-    private String OPEN_AI_URI;
+    private static String OPEN_AI_URI;
     private static final String REQUEST_MESSAGE = "Translate this text into";
     private final LanguageRepository languageRepository;
     private final TranslationRepository translationRepository;
+
+    @Builder
+    public static class OpenAIRequestForm {
+
+        private String source;
+        private String target;
+        private String text;
+
+    }
 
     /**
      * OpenAI API에 번역 요청을 전송한 뒤 resultText를 DB의 해당 레코드에 저장한다.
      *
      * @param emptyResultTranslation resultText가 포함돼 있지 않은 Translation 엔티티
-     * @param requestTranslationDto 클라이언트의 번역 요청 정보
+     * @param requestTranslationDto  클라이언트의 번역 요청 정보
      * @throws JsonProcessingException OpenAI API 결과 ObjectMapping 실패 시
      */
 
@@ -65,7 +76,7 @@ public class OpenAIService {
         HttpEntity<?> openAiRequest = new HttpEntity<>(body.toString(), httpHeaders);
 
         //Send HTTP POST request
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate(); //webclient
         HttpEntity<String> responseHttpEntity = restTemplate.postForEntity(OPEN_AI_URI,
             openAiRequest, String.class);
 
@@ -85,7 +96,7 @@ public class OpenAIService {
      * resultText를 DB의 해당 레코드에 저장한다
      *
      * @param emptyResultTranslation resultText가 포함돼 있지 않은 Translation 엔티티
-     * @param openAIResponseDto openAI response JSON을 객체화 한 클래스
+     * @param openAIResponseDto      openAI response JSON을 객체화 한 클래스
      * @throws Exception 처리예정
      */
 
@@ -110,9 +121,9 @@ public class OpenAIService {
     public String getRequestContent(RequestTranslationDto requestTranslationDto) {
         String requestContent;
         String requestText = requestTranslationDto.getRequestText();
-        String requestLanguageName = languageRepository.findByLanguageNo(
-            requestTranslationDto.getRequestLanguageNo()).getLanguageName();
-
+        String requestLanguageName;
+        requestLanguageName = languageRepository.findByLanguageNo(
+            requestTranslationDto.getResultLanguageNo()).getLanguageName();
         requestContent = REQUEST_MESSAGE + requestLanguageName + ":" + requestText;
         return requestContent;
     }

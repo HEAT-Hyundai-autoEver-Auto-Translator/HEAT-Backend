@@ -3,21 +3,18 @@ package com.hyundaiautoever.HEAT.v1.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
-import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
+import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.TranslationRepository;
 import com.hyundaiautoever.HEAT.v1.repository.UserRepository;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.langdetect.OptimaizeLangDetector;
-import org.apache.tika.language.detect.LanguageDetector;
-import org.apache.tika.language.detect.LanguageResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +27,8 @@ public class TranslationService {
     private final TranslationRepository translationRepository;
     private final UserRepository userRepository;
     private final OpenAIService openAIService;
+    private final PapagoService papagoService;
+    private final LanguageService languageService;
 
     /**
      * 번역요청을 처리한다.
@@ -38,7 +37,7 @@ public class TranslationService {
      * @throws Exception 처리예정
      */
 
-    public Long requestTranslation(RequestTranslationDto requestTranslationDto) throws IOException {
+    public Long requestTranslation(RequestTranslationDto requestTranslationDto) {
 
         Translation emptyResultTranslation;
 
@@ -46,11 +45,12 @@ public class TranslationService {
         emptyResultTranslation = saveEmptyRequstTranslation(requestTranslationDto);
 
         //openAI API 요청 비동기로 진행 및 결과 저장
-        try {
-            openAIService.getOpenAIResponseAndSave(emptyResultTranslation, requestTranslationDto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+        papagoService.getPapagoResponseAndSave(emptyResultTranslation, requestTranslationDto);
+//            openAIService.getOpenAIResponseAndSave(emptyResultTranslation, requestTranslationDto);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
 
         //저장된 translationNo 반환
         return emptyResultTranslation.getTranslationNo();
@@ -63,13 +63,17 @@ public class TranslationService {
      * @throws TranslationNotCompleteException 해당 레코드에 아직 결과값이 저장돼 있지 않았을 떄
      */
 
-    @Transactional
-    public TranslationDto getTranslationResult(Long translationNo) {
+    @Transactional   // 필요 여부를 판단하기 Transactional을 전역적으로 처리하는 법
+    public Optional<TranslationDto> getTranslationResult(Long translationNo) {
         Translation translation = translationRepository.findByTranslationNo(translationNo);
+        if (translation == null) {
+            throw new TranslationNotFoundException("잘못된 번역 데이터 요청입니다.");
+        }
         if (translation.getResultText() == null) {
             throw new TranslationNotCompleteException("번역 작업이 완료되지 않았습니다.");
         }
-        TranslationDto translationDto = new TranslationDto(translation);
+        Optional<TranslationDto> translationDto = Optional.ofNullable(
+            new TranslationDto(translation));
         return translationDto;
     }
 
@@ -115,31 +119,27 @@ public class TranslationService {
      */
 
     @Transactional
-    public Translation saveEmptyRequstTranslation(RequestTranslationDto requestTranslationDto)
-        throws IOException {
+    public Translation saveEmptyRequstTranslation(RequestTranslationDto requestTranslationDto) {
         Translation emptyRequstTranslation = new Translation();
+        //User 세팅
         emptyRequstTranslation.setUser(
             userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo()));
-        emptyRequstTranslation.setRequestLanguageNo(detectLanguageType(requestTranslationDto));
+
+        //RequestLanguageNo 세팅
+        emptyRequstTranslation.setRequestLanguageNo(
+            languageService.detectLanguageType(requestTranslationDto));
+
+        //ResultLanguage No 세팅
         emptyRequstTranslation.setResultLanguageNo(
-            languageRepository.findByLanguageNo(requestTranslationDto.getRequestLanguageNo()));
+            languageRepository.findByLanguageNo(requestTranslationDto.getResultLanguageNo()));
+
+        //CreateDatetime 세팅
         emptyRequstTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));
+
+        //RequestText 세팅
         emptyRequstTranslation.setRequestText(requestTranslationDto.getRequestText());
+
         return translationRepository.save(emptyRequstTranslation);
     }
 
-    /**
-     * 텍스트를 기반으로 번역 요청 언어를 감지한다.
-     *
-     * @param requestTranslationDto 번역 테이블 기본키 값
-     * @throws Exception 처리예정
-     */
-
-    @Transactional
-    public Language detectLanguageType(RequestTranslationDto requestTranslationDto)
-        throws IOException {
-        LanguageDetector detector = new OptimaizeLangDetector().loadModels();
-        LanguageResult result = detector.detect(requestTranslationDto.getRequestText());
-        return languageRepository.findByLanguageCode(result.getLanguage());
-    }
 }

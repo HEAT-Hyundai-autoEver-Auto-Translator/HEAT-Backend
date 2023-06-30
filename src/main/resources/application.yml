@@ -2,7 +2,10 @@ env:
   open-ai:
     key: ${OPEN_AI_API}
     uri: https://api.openai.com/v1/chat/completions
-
+  papago:
+    id: ${PAPAGO_ID}
+    secret: ${PAPAGO_SECRET}
+    uri: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
 
 spring:
   mvc:
