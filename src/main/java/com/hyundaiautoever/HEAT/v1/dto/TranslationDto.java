@@ -17,12 +17,13 @@ public class TranslationDto {
     private String resultText;
 
     public TranslationDto(Translation translation){
-        translationNo = translation.getTranslationNo();
-        userId= translation.getUser().getUserId();
-        requestLanguageName = translation.getRequestLanguageNo().getLanguageName();
-        resultLanguageName = translation.getResultLanguageNo().getLanguageName();
-        createDateTime = translation.getCreateDatetime();
-        requestText = translation.getRequestText();
-        resultText = translation.getResultText();
+        this.translationNo = translation.getTranslationNo();
+        this.userId= translation.getUser().getUserId();
+        this.requestLanguageName = translation.getRequestLanguage().getLanguageName();
+        this.resultLanguageName = translation.getResultLanguage().getLanguageName();
+        this.createDateTime = translation.getCreateDatetime();
+        this.requestText = translation.getRequestText();
+        this.resultText = translation.getResultText();
     }
 }
+

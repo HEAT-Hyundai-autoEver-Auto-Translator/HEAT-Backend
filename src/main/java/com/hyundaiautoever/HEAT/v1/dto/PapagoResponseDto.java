@@ -9,6 +9,7 @@ public class PapagoResponseDto {
 
     @Getter
     public static class Message {
+
         private Result result;
     }
 

@@ -1,15 +1,9 @@
 package com.hyundaiautoever.HEAT.v1.entity;
 
 import java.sql.Timestamp;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.ws.rs.CookieParam;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +15,7 @@ import lombok.Setter;
 public class Translation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long translationNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,11 +24,11 @@ public class Translation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_language_no")
-    private Language requestLanguageNo;
+    private Language requestLanguage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_language_no")
-    private Language resultLanguageNo;
+    private Language resultLanguage;
 
     @Column(columnDefinition = "TEXT")
     private String requestText;
