@@ -26,6 +26,16 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.ENV_TOKEN }}
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       
       - name: Start MariaDB
         uses: getong/mariadb-action@v1.1
