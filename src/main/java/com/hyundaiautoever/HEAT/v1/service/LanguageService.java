@@ -1,7 +1,7 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
-import com.hyundaiautoever.HEAT.v1.dto.LanguageDto;
-import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.language.LanguageDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.hyundaiautoever.HEAT.v1.exception.LanguageDetectionFailureException;

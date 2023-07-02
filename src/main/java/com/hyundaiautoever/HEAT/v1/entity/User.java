@@ -10,15 +10,15 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "user", indexes = @Index(name = "idx_user_id", columnList = "user_id"))
+@Table(name = "user", indexes = @Index(name = "idx_user_email", columnList = "user_email"))
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userAccountNo;
 
-    @Column(name = "user_id")
-    private String userId;
+    @Column(name = "user_email")
+    private String userEmail;
     private String passwordHash;
     private String userName;
     private String userRole;

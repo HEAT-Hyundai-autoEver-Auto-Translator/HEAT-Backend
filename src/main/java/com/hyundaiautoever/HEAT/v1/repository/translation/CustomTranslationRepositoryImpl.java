@@ -1,6 +1,5 @@
 package com.hyundaiautoever.HEAT.v1.repository.translation;
 
-import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.QTranslation;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -8,11 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.querydsl.jpa.JPAExpressions.selectFrom;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +16,7 @@ public class CustomTranslationRepositoryImpl implements CustomTranslationReposit
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
-    public List<Translation> findTranslationByUserId(String userId) {
+    public List<Translation> findTranslationByUserEmail(String userEmail) {
 
         QTranslation translation = QTranslation.translation;
 
@@ -29,7 +24,7 @@ public class CustomTranslationRepositoryImpl implements CustomTranslationReposit
         List<Translation> userTranslationList = queryFactory
                 .selectFrom(translation)
                 .join(translation.user)
-                .where(translation.user.userId.eq(userId))
+                .where(translation.user.userEmail.eq(userEmail))
                 .fetch();
 
         // 변환 후 반환

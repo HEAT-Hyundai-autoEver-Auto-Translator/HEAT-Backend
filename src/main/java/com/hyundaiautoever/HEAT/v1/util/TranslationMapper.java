@@ -1,6 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.util;
 
-import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import org.mapstruct.Mapper;

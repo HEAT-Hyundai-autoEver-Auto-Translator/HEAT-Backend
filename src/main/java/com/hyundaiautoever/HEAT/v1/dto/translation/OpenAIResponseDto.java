@@ -1,4 +1,4 @@
-package com.hyundaiautoever.HEAT.v1.dto;
+package com.hyundaiautoever.HEAT.v1.dto.translation;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,18 +1,14 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
-import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
-import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.service.TranslationService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -51,10 +47,10 @@ public class TranslationController {
     }
 
     @Nullable
-    @GetMapping("/translation/user-id")
-    public ResponseEntity<?> findTranslationByUserId(
+    @GetMapping("/translation/user-email")
+    public ResponseEntity<?> findTranslationByUserEmail(
             @RequestParam(value = "user-id") String userId) {
-        List<TranslationDto> translationDtoList = translationService.findTranslationByUserId(
+        List<TranslationDto> translationDtoList = translationService.findTranslationByUserEmail(
                 userId);
         return ResponseEntity.ok(translationDtoList);
     }

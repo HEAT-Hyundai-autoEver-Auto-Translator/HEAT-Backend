@@ -2,8 +2,8 @@ package com.hyundaiautoever.HEAT.v1.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hyundaiautoever.HEAT.v1.dto.PapagoResponseDto;
-import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.PapagoResponseDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.translation.TranslationRepository;
