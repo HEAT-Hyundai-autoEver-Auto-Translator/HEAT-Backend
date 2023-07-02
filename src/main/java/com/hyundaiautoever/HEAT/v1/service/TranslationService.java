@@ -7,7 +7,7 @@ import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.translation.TranslationRepository;
-import com.hyundaiautoever.HEAT.v1.repository.UserRepository;
+import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
