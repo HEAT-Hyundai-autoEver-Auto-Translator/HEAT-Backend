@@ -27,7 +27,6 @@ public class CustomTranslationRepositoryImpl implements CustomTranslationReposit
                 .where(translation.user.userEmail.eq(userEmail))
                 .fetch();
 
-        // 변환 후 반환
         return userTranslationList;
     }
 }

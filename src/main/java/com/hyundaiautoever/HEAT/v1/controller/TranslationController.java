@@ -49,7 +49,7 @@ public class TranslationController {
     @Nullable
     @GetMapping("/translation/user-email")
     public ResponseEntity<?> findTranslationByUserEmail(
-            @RequestParam(value = "user-id") String userId) {
+            @RequestParam(value = "user-email") String userId) {
         List<TranslationDto> translationDtoList = translationService.findTranslationByUserEmail(
                 userId);
         return ResponseEntity.ok(translationDtoList);

@@ -1,11 +1,15 @@
 package com.hyundaiautoever.HEAT.v1.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.*;
 
+import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.common.aliasing.qual.Unique;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
@@ -17,18 +21,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userAccountNo;
 
-    @Column(name = "user_email")
+    @Column(name = "user_email", unique = true, nullable = false)
     private String userEmail;
+    @Column(nullable = false)
     private String passwordHash;
+    @Column(nullable = false)
     private String userName;
-    private String userRole;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole userRole;
     private String profileImageUrl;
+    @Column(nullable = false)
     private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_no")
-    private Language languageNo;
+    @JoinColumn(name = "language_no", nullable = false)
+    private Language language;
 
-    private Date signupDate;
-    private Date lastAccessDate;
+    @Column(nullable = false)
+    private LocalDate signupDate;
+    @Column(nullable = false)
+    private LocalDate lastAccessDate;
 }
