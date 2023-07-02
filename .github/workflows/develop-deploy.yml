@@ -8,11 +8,11 @@ env:
   CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
   
 on:
-#   pull_request:
-   push:
+   pull_request:
+#   push:
     branches:
-#      - 'main'
-      - 'HEAT-30'
+      - 'main'
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -44,11 +44,8 @@ jobs:
           mysql user: 'test'
           mysql password: '1234'
 
-      - name: Build Clean
+      - name: Gradle build
         run: ./gradlew clean build
-
-      - name: Gradle build test
-        run: ./gradlew build
         
       - name: Zip the build file
         run: zip -r ./$PROJECT_NAME.zip .
