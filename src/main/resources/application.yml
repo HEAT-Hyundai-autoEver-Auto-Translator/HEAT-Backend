@@ -1,10 +1,19 @@
+env:
+  open-ai:
+    key: ${OPEN_AI_API}
+    uri: https://api.openai.com/v1/chat/completions
+  papago:
+    id: ${PAPAGO_ID}
+    secret: ${PAPAGO_SECRET}
+    uri: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
+
 spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     generate-ddl: true
     show-sql: true
     properties:
@@ -23,3 +32,4 @@ logging:
         type:
           descriptor:
             sql: trace
+    root: info

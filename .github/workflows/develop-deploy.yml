@@ -8,10 +8,11 @@ env:
   CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
   
 on:
-#   pull_request:
-  push:
+   pull_request:
+#   push:
     branches:
       - 'main'
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -25,6 +26,16 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.ENV_TOKEN }}
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       
       - name: Start MariaDB
         uses: getong/mariadb-action@v1.1
@@ -32,9 +43,9 @@ jobs:
           mysql database: 'HEAT' 
           mysql user: 'test'
           mysql password: '1234'
-        
-      - name: Gradle build test
-        run: ./gradlew build
+
+      - name: Gradle build
+        run: ./gradlew clean build
         
       - name: Zip the build file
         run: zip -r ./$PROJECT_NAME.zip .
