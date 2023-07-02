@@ -1,9 +1,8 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
-import com.hyundaiautoever.HEAT.v1.dto.RequestTranslationDto;
-import com.hyundaiautoever.HEAT.v1.dto.TranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
+import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
-import com.hyundaiautoever.HEAT.v1.exception.LanguageDetectionFailureException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
@@ -91,8 +90,8 @@ public class TranslationService {
      * @return 유저의 번역 이력 리스트
      */
     @Nullable
-    public List<TranslationDto> findTranslationByUserId(String userId) {
-        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserId(userId));
+    public List<TranslationDto> findTranslationByUserEmail(String userId) {
+        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userId));
     }
 
 
