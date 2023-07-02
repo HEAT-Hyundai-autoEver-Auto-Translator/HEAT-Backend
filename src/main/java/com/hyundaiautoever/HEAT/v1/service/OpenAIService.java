@@ -48,21 +48,21 @@ public class OpenAIService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         //OpenAI 요청 바디 생성
-        ObjectNode openAIRequeustBody = objectMapper.createObjectNode();
-        openAIRequeustBody.put("model", OPEN_AI_MODEL);
+        ObjectNode openAIRequestBody = objectMapper.createObjectNode();
+        openAIRequestBody.put("model", OPEN_AI_MODEL);
         ArrayNode messages = objectMapper.createArrayNode();
         ObjectNode messagesObject = objectMapper.createObjectNode();
         messagesObject.put("role", OPEN_AI_ROLE);
         messagesObject.put("content", getRequestContent(requestTranslationDto));
         messages.add(messagesObject);
-        openAIRequeustBody.put("messages", messages);
+        openAIRequestBody.put("messages", messages);
 
         //Http 요청 생성 및 응답 수신
         WebClient webClient = WebClient.create(OPEN_AI_URI);
         OpenAIResponseDto openAiResponseDto = webClient.post()
                 .header("Authorization", "Bearer " + OPEN_AI_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(openAIRequeustBody)
+                .bodyValue(openAIRequestBody)
                 .retrieve()
                 .bodyToMono(OpenAIResponseDto.class)
                 .block();

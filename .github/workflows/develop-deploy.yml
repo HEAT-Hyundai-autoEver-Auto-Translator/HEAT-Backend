@@ -43,7 +43,10 @@ jobs:
           mysql database: 'HEAT' 
           mysql user: 'test'
           mysql password: '1234'
-        
+
+      - name: Build Clean
+        run: ./gradlew clean build
+
       - name: Gradle build test
         run: ./gradlew build
         
