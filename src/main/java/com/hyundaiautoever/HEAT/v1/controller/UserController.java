@@ -2,14 +2,18 @@ package com.hyundaiautoever.HEAT.v1.controller;
 
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
+import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,13 +39,19 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto createUserDto) {
-        return ResponseEntity.ok(userService.createUser(createUserDto));
+    public ResponseEntity<?> createUser(
+            @RequestPart @Valid CreateUserDto createUserDto,
+            @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
+        if (userProfileImage != null) {
+            log.info("이미지 업로드 확인");
+        }
+        return ResponseEntity.ok(userService.createUser(createUserDto, userProfileImage));
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUser(@RequestBody UpdateUserDto updateUserDto) {
-        return ResponseEntity.ok(userService.updateUser(updateUserDto));
+    public ResponseEntity<?> updateUser(@RequestPart UpdateUserDto updateUserDto,
+            @RequestPart Optional<MultipartFile> userProfileImage) throws IOException {
+        return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
     }
 
     @DeleteMapping("/user")
