@@ -31,7 +31,6 @@ public class User {
     @Column(nullable = false)
     private UserRole userRole;
     private String profileImageUrl;
-    @Column(nullable = false)
     private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +39,5 @@ public class User {
 
     @Column(nullable = false)
     private LocalDate signupDate;
-    @Column(nullable = false)
     private LocalDate lastAccessDate;
 }

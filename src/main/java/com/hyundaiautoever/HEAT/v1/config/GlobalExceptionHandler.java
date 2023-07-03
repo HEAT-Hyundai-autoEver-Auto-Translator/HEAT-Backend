@@ -1,8 +1,10 @@
 package com.hyundaiautoever.HEAT.v1.config;
 
+import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.exception.LanguageDetectionFailureException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
+import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,6 +25,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(LanguageDetectionFailureException.class)
     public ResponseEntity<String> handleLanguageDetectionFailureException(LanguageDetectionFailureException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

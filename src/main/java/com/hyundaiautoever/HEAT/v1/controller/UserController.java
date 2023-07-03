@@ -2,6 +2,7 @@ package com.hyundaiautoever.HEAT.v1.controller;
 
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
+import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto createUserDto) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto createUserDto) throws UserAlreadyExistException {
         return ResponseEntity.ok(userService.createUser(createUserDto));
     }
 

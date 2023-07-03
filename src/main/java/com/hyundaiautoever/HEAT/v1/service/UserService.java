@@ -4,6 +4,7 @@ import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UserDto;
 import com.hyundaiautoever.HEAT.v1.entity.User;
+import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 import com.hyundaiautoever.HEAT.v1.util.UserMapper;
@@ -12,6 +13,7 @@ import com.querydsl.core.dml.UpdateClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final LanguageRepository languageRepository;
+    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     /**
@@ -71,19 +74,19 @@ public class UserService {
      * @param createUserDto 유저 생성 정보
      * @return DB에 저장 후 반환되는 유저 엔티티의 DTO 변환값
      */
-    public UserDto createUser(CreateUserDto createUserDto) {
+    public UserDto createUser(CreateUserDto createUserDto) throws UserAlreadyExistException {
+
+        if (userRepository.findByUserEmail(createUserDto.getUserEmail()) != null) {
+            throw new UserAlreadyExistException("해당 이메일로 가입한 유저가 이미 존재합니다.");
+        }
         User user = new User();
         user.setUserEmail(createUserDto.getUserEmail());
-        //비밀번호 처리 로직 추가하기
-        user.setPasswordHash(createUserDto.getPassword());
+        user.setPasswordHash(passwordEncoder.encode(createUserDto.getPassword()));
         user.setUserName(createUserDto.getUserName());
         user.setUserRole(UserRole.user);
         user.setProfileImageUrl(createUserDto.getProfileImageUrl());
-        //토큰 추가 로직 추가하기
-        user.setRefreshToken("token example");
         user.setLanguage(languageRepository.findByLanguageNo(createUserDto.getLanguageNo()));
         user.setSignupDate(LocalDate.now());
-        user.setLastAccessDate(LocalDate.now());
         return (userMapper.toUserDto(userRepository.save(user)));
     }
 
