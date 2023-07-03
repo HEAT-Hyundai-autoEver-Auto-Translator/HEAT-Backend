@@ -18,8 +18,8 @@ public class CreateUserDto {
     private String password;
     @NotNull
     private String userName;
-    @NotNull
-    private String profileImageUrl;
+//    @NotNull
+//    private String profileImageUrl;
     @NotNull
     @Range(min = 1, max = 13)
     private Integer languageNo;

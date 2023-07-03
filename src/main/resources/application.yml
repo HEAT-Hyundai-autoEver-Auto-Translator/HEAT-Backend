@@ -7,6 +7,7 @@ env:
     secret: ${PAPAGO_SECRET}
     uri: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
 
+
 spring:
   mvc:
     pathmatch:
@@ -25,8 +26,28 @@ spring:
     username: ${DB_USER}
     password: ${DB_PW}
 
+cloud:
+  aws:
+    s3:
+      bucket: heat-back-s3
+    stack:
+      auto: false
+    region:
+      auto: false
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+      instance-profile: true
+
 logging:
   level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+        internal:
+          InstanceMetadataServiceResourceFetcher: error
     org:
       hibernate:
         type:
