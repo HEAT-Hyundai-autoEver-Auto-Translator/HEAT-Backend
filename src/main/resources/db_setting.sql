@@ -1,0 +1,3 @@
+ALTER TABLE user CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE translation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE language CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

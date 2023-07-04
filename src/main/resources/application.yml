@@ -20,6 +20,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        hbm2ddl:
+          import_files: db_setting.sql
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${DB_URL}
