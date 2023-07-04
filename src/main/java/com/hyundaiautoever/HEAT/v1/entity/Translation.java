@@ -33,7 +33,7 @@ public class Translation {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String requestText;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String resultText;
     @Column(nullable = false)
     private Timestamp createDatetime;
