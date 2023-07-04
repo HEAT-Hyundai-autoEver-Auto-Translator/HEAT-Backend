@@ -1,4 +1,4 @@
-package com.hyundaiautoever.HEAT.v1.dto;
+package com.hyundaiautoever.HEAT.v1.dto.user;
 
 import lombok.Getter;
 

@@ -13,7 +13,6 @@ public class UpdateUserDto {
     private String userEmail;
     private String password;
     private String userName;
-//    private String profileImageUrl;
-    private Integer languageNo;
+    private String languageCode;
 }
 

@@ -41,7 +41,7 @@ public class TranslationService {
      * 번역요청을 처리한다.
      *
      * @param requestTranslationDto 클라이언트의 번역 요청 정보
-     * @return 요청한 번역 레코드의 기본 키 값(traslationNo)
+     * @return 요청한 번역 레코드의 기본 키 값(translationNo)
      * @throws Exception 처리예정
      */
     public Long requestTranslation(RequestTranslationDto requestTranslationDto) {
@@ -116,7 +116,7 @@ public class TranslationService {
                 languageService.detectLanguageType(requestTranslationDto));
         //ResultLanguage No 세팅
         emptyRequstTranslation.setResultLanguage(
-                languageRepository.findByLanguageNo(requestTranslationDto.getResultLanguageNo()));
+                languageRepository.findByLanguageCode(requestTranslationDto.getResultLanguageCode()));
         //CreateDatetime 세팅
         emptyRequstTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));
         //RequestText 세팅

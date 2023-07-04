@@ -21,6 +21,5 @@ public class CreateUserDto {
 //    @NotNull
 //    private String profileImageUrl;
     @NotNull
-    @Range(min = 1, max = 13)
-    private Integer languageNo;
+    private String languageCode;
 }

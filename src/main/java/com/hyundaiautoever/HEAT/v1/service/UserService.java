@@ -96,7 +96,7 @@ public class UserService {
         String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
         user.setProfileImageUrl(userProfileImageUrl);
         //유저 언어 세팅
-        user.setLanguage(languageRepository.findByLanguageNo(createUserDto.getLanguageNo()));
+        user.setLanguage(languageRepository.findByLanguageCode(createUserDto.getLanguageCode()));
         //유저 가입일 세팅
         user.setSignupDate(LocalDate.now());
         return (userMapper.toUserDto(userRepository.save(user)));
@@ -116,17 +116,17 @@ public class UserService {
         User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
         //유저 이메일 업데이트
         String newUserEmail = updateUserDto.getUserEmail();
-        if (validCheck(newUserEmail, user)) {
+        if (validCheck(newUserEmail, user.getUserEmail())) {
             user.setUserEmail(newUserEmail);
         }
         //유저 비밀번호 업데이트
         String newPassword = updateUserDto.getPassword();
-        if (validCheck(newPassword, user)) {
+        if (passwordValidCheck(newPassword, user.getPasswordHash())) {
             user.setPasswordHash(newPassword);
         }
         //유저 이름 업데이트
         String newUserName = updateUserDto.getUserName();
-        if (validCheck(newUserName, user)) {
+        if (validCheck(newUserName, user.getUserName())) {
             user.setUserName(newUserName);
         }
         //유저 프로필 사진 업데이트
@@ -137,9 +137,9 @@ public class UserService {
             user.setProfileImageUrl(userProfileImageUrl);
         }
         //유저 언어 업데이트
-        Integer newLanguageNo = updateUserDto.getLanguageNo();
-        if (newLanguageNo != null && newLanguageNo != user.getLanguage().getLanguageNo()) {
-            user.setLanguage(languageRepository.findByLanguageNo(newLanguageNo));
+        String newLanguageCode = updateUserDto.getLanguageCode();
+        if (validCheck(newLanguageCode, user.getLanguage().getLanguageCode())) {
+            user.setLanguage(languageRepository.findByLanguageCode(newLanguageCode));
         }
         return (userMapper.toUserDto(userRepository.save(user)));
     }
@@ -157,8 +157,16 @@ public class UserService {
     }
 
 
-    private boolean validCheck(String newValue, User user) {
-        if (newValue != null && !user.getUserEmail().equals(newValue) && newValue.length() != 0) {
+    private boolean validCheck(String newValue, String oldValue) {
+        if (newValue != null && newValue != oldValue && newValue.length() != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean passwordValidCheck(String newPassword, String oldPasswordHash) {
+        //검증조건 이후에 추가하기
+        if (newPassword != null && newPassword.length() != 0 && passwordEncoder.matches(newPassword, oldPasswordHash)) {
             return true;
         }
         return false;

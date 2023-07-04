@@ -1,8 +1,10 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
+import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
+import com.hyundaiautoever.HEAT.v1.service.LoginService;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final LoginService loginService;
+
+    @PostMapping("/user/login")
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        return ResponseEntity.ok(loginService.login(loginDto));
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
