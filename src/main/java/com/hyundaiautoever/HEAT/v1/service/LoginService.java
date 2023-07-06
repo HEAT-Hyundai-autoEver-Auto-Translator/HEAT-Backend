@@ -4,6 +4,7 @@ import com.hyundaiautoever.HEAT.v1.dto.user.GoogleResponseDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.LoginResponseDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UserDto;
+import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
@@ -76,11 +77,16 @@ public class LoginService {
             //3. 새로운 유저일 경우 DB에 저장
             User newUser = new User();
             newUser.setUserEmail(googleUserInfo.getEmail());
-            newUser.setUserName(googleUserInfo.getDisplayName());
+            newUser.setUserName(googleUserInfo.getName());
             newUser.setUserRole(UserRole.user);
-            newUser.setProfileImageUrl(googleUserInfo.getPhotoUrl());
+            newUser.setProfileImageUrl(googleUserInfo.getPicture());
             //구글 인포 언어 결과 값 확인하기
-//            newUser.setLanguage(languageRepository.findByLanguageCode(googleUserInfo.getLanguage()));
+            Language language = languageRepository.findByLanguageCode(googleUserInfo.getLocale());
+            if (language == null) {
+                newUser.setLanguage(languageRepository.findByLanguageNo(1));
+            } else {
+                newUser.setLanguage(language);
+            }
             newUser.setSignupDate(LocalDate.now());
             newUser.setLastAccessDate(LocalDate.now());
             user = Optional.of(userRepository.save(newUser));

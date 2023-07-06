@@ -34,6 +34,8 @@ public class GoogleService {
             throw new IOException("Google API 호출 실패");
         }
 
+        log.info(googleResponseDto.toString());
+
         return googleResponseDto;
     }
 

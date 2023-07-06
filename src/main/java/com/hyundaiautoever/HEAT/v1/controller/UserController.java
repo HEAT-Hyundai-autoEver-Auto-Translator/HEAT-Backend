@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -32,8 +33,10 @@ public class UserController {
         return ResponseEntity.ok(loginService.login(loginDto));
     }
 
-//    @PostMapping("/user/login/google")
-//    public ResponseEntity<?> googleLogin(@Re)
+    @PostMapping("/user/login/google")
+    public ResponseEntity<?> googleLogin(@RequestBody HashMap<String, String> accessToken) throws IOException {
+        return ResponseEntity.ok(loginService.googleLogin(accessToken.get("accessToken")));
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
