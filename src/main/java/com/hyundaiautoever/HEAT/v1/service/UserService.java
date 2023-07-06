@@ -48,7 +48,7 @@ public class UserService {
 
 
     /**
-     * 유저 별 번역 이력을 반환한다.
+     * 유저의 정보를 반환한다.
      *
      * @param userAccountNo 유저의 어카운트 넘버
      * @return 유저Dto
@@ -60,7 +60,7 @@ public class UserService {
 
 
     /**
-     * 유저 별 번역 이력을 반환한다.
+     * 입력되는 글자가 포함된 유저 리스트를 반환한다.
      *
      * @param userName 유저 네임
      * @return 유저Dto 리스트
@@ -137,10 +137,15 @@ public class UserService {
         if (validCheck(newLanguageName, user.getLanguage().getLanguageName())) {
             user.setLanguage(languageRepository.findByLanguageName(newLanguageName));
         }
-        return (userMapper.toUserDto(userRepository.save(user)));
+        return (userMapper.toUserDto(user));
     }
 
-
+    /**
+     * 유저를 권한을 수정한다.
+     *
+     * @param adminUpdateUserDto 수정하고자 하는 유저의 accountNo와 새로운 권한 값
+     * @return DB에 저장된 user를 변환한 userDto
+     */
     public UserDto updateUserRole(AdminUpdateUserDto adminUpdateUserDto) {
         User user = userRepository.findByUserAccountNo(adminUpdateUserDto.getUserAccountNo());
         if (adminUpdateUserDto.getUserRole().equals("user")) {
@@ -148,7 +153,7 @@ public class UserService {
         } else {
             user.setUserRole(UserRole.admin);
         }
-        userRepository.save(user);
+        user = userRepository.save(user);
         return (userMapper.toUserDto(user));
     }
 
@@ -165,7 +170,7 @@ public class UserService {
 
 
     private boolean validCheck(String newValue, String oldValue) {
-        if (newValue != null && newValue != oldValue && newValue.length() != 0) {
+        if (newValue != null && !newValue.equals(oldValue) && newValue.length() != 0) {
             return true;
         }
         return false;

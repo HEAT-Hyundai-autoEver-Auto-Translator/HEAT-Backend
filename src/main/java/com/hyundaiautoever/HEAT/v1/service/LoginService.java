@@ -60,6 +60,7 @@ public class LoginService {
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
+                .userAccountNo(user.getUserAccountNo())
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
@@ -101,6 +102,7 @@ public class LoginService {
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
+                .userAccountNo(user.get().getUserAccountNo())
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
