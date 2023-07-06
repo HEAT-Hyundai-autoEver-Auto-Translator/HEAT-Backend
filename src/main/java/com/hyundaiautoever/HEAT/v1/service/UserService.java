@@ -80,7 +80,7 @@ public class UserService {
     public UserDto createUser(CreateUserDto createUserDto, Optional<MultipartFile> userProfileImage)
             throws UserAlreadyExistException, IOException {
 
-        if (userRepository.findByUserEmail(createUserDto.getUserEmail()).isPresent()) {
+        if (!userRepository.findByUserEmail(createUserDto.getUserEmail()).isEmpty()) {
             throw new UserAlreadyExistException("해당 이메일로 가입한 유저가 이미 존재합니다.");
         }
         User user = new User();
