@@ -6,7 +6,8 @@ env:
     id: ${PAPAGO_ID}
     secret: ${PAPAGO_SECRET}
     uri: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
-
+  google:
+    key: ${GOOGLE_API_KEY}
 
 spring:
   mvc:
@@ -20,11 +21,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        hbm2ddl:
+          import_files: db_setting.sql
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PW}
+  jwt:
+    secret: ${JWT_SECRET}
 
 cloud:
   aws:

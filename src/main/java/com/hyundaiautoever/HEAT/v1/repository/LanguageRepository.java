@@ -9,5 +9,6 @@ import java.util.List;
 public interface LanguageRepository extends JpaRepository<Language, Integer> {
 
     Language findByLanguageNo(Integer languageNo);
+    Language findByLanguageName(String languageName);
     Language findByLanguageCode(String languageCode);
 }

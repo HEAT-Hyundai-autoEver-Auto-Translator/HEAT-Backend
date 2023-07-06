@@ -1,8 +1,11 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
+import com.hyundaiautoever.HEAT.v1.dto.user.AdminUpdateUserDto;
+import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
+import com.hyundaiautoever.HEAT.v1.service.LoginService;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -22,6 +26,17 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final LoginService loginService;
+
+    @PostMapping("/user/login")
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        return ResponseEntity.ok(loginService.login(loginDto));
+    }
+
+    @PostMapping("/user/login/google")
+    public ResponseEntity<?> googleLogin(@RequestBody HashMap<String, String> accessToken) throws IOException {
+        return ResponseEntity.ok(loginService.googleLogin(accessToken.get("accessToken")));
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
@@ -40,7 +55,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
-            @RequestPart @Valid CreateUserDto createUserDto,
+            @RequestPart CreateUserDto createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
         if (userProfileImage != null) {
             log.info("이미지 업로드 확인");
@@ -54,10 +69,15 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/admin/user")
     public ResponseEntity<?> deleteUser(@RequestParam(value = "uid") Long userAccountNo) {
         userService.deleteUser(userAccountNo);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/admin/user")
+    public ResponseEntity<?> updateUser(@RequestBody AdminUpdateUserDto adminUpdateUserDto) {
+        return ResponseEntity.ok(userService.updateUserRole(adminUpdateUserDto));
     }
 
 

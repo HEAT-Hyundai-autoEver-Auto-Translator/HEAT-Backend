@@ -84,8 +84,7 @@ public class OpenAIService {
         String requestContent;
         String requestText = requestTranslationDto.getRequestText();
         String requestLanguageName;
-        requestLanguageName = languageRepository.findByLanguageNo(
-                requestTranslationDto.getResultLanguageNo()).getLanguageName();
+        requestLanguageName = requestTranslationDto.getResultLanguageName();
         requestContent = REQUEST_MESSAGE + requestLanguageName + " : " + requestText;
         return requestContent;
     }

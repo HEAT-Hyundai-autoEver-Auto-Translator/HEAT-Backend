@@ -2,6 +2,7 @@ package com.hyundaiautoever.HEAT.v1.dto.user;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,10 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class UpdateUserDto {
 
     private Long userAccountNo;
-    private String userEmail;
     private String password;
     private String userName;
-//    private String profileImageUrl;
-    private Integer languageNo;
+    private String languageName;
 }
 

@@ -33,7 +33,7 @@ public class PapagoService {
     private final LanguageRepository languageRepository;
     private final TranslationRepository translationRepository;
     private final LanguageService languageService;
-    
+
     @Async
     public void getPapagoResponseAndSave(Translation translationWithoutResult,
                                          RequestTranslationDto requestTranslationDto) {
@@ -42,14 +42,15 @@ public class PapagoService {
         //번역 내용 DB에 저장
         saveCompleteResultTranslation(translationWithoutResult, papagoResponseDto);
     }
-    
+
     private PapagoResponseDto getPapagoResponseDto(RequestTranslationDto requestTranslationDto) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 중국어가 번역 요청에 포함된 경우 타겟 언어 코드 변환 (zh -> zh-CN : 파파고 중국어 간체자 코드)
-        String requestLanguageCode = getAdjustedLanguageCode(languageService.detectLanguageType(requestTranslationDto).getLanguageCode());
-        String resultLanguageCode = getAdjustedLanguageCode(languageRepository.findByLanguageNo(
-                requestTranslationDto.getResultLanguageNo()).getLanguageCode());
+        String requestLanguageCode = getAdjustedLanguageCode(
+                languageService.detectLanguageType(requestTranslationDto).getLanguageCode());
+        String resultLanguageCode = getAdjustedLanguageCode(
+                languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()).getLanguageCode());
 
         // Http 요청 바디 생성
         ObjectNode papagoRequestBody = objectMapper.createObjectNode();
@@ -69,7 +70,7 @@ public class PapagoService {
                 .block();
         return papagoResponseDto;
     }
-    
+
     @Transactional
     public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
                                                      PapagoResponseDto papagoResponseDto) {
@@ -84,7 +85,7 @@ public class PapagoService {
 
         return translationRepository.save(fullRequestTranslation);
     }
-    
+
     private String getAdjustedLanguageCode(String languageCode) {
         return DB_CHINESE_CODE.equals(languageCode) ? PAPAGO_CHINESE_CODE : languageCode;
     }
