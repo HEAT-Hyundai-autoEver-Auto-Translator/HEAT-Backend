@@ -1,9 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
-import com.hyundaiautoever.HEAT.v1.dto.user.AdminUpdateUserDto;
-import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
-import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
-import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
+import com.hyundaiautoever.HEAT.v1.dto.user.*;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.LoginService;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
@@ -30,12 +27,20 @@ public class UserController {
 
     @PostMapping("/user/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(loginService.login(loginDto));
+        LoginResponseDto loginResponseDto = loginService.login(loginDto);
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
+                .header("Set-Cookie", "refreshToken=" + loginResponseDto.getRefreshToken())
+                .body("Access 토큰과 Refresh 토큰이 쿠키에 담겨 있습니다.");
     }
 
     @PostMapping("/user/login/google")
     public ResponseEntity<?> googleLogin(@RequestBody HashMap<String, String> accessToken) throws IOException {
-        return ResponseEntity.ok(loginService.googleLogin(accessToken.get("accessToken")));
+        LoginResponseDto loginResponseDto = loginService.googleLogin(accessToken.get("accessToken"));
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
+                .header("Set-Cookie", "refreshToken=" + loginResponseDto.getRefreshToken())
+                .body("Access 토큰과 Refresh 토큰이 쿠키에 담겨 있습니다.");
     }
 
     @GetMapping("/user")
