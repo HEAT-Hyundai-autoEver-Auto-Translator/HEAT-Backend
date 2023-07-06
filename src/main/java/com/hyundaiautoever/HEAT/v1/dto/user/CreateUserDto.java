@@ -1,14 +1,13 @@
 package com.hyundaiautoever.HEAT.v1.dto.user;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.checkerframework.checker.units.qual.N;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Builder
+@Setter
 public class CreateUserDto {
 
     @NotNull
@@ -18,8 +17,6 @@ public class CreateUserDto {
     private String password;
     @NotNull
     private String userName;
-//    @NotNull
-//    private String profileImageUrl;
     @NotNull
-    private String languageCode;
+    private String languageName;
 }

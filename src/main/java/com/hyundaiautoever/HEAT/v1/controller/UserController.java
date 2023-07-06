@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
+import com.hyundaiautoever.HEAT.v1.dto.user.AdminUpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
@@ -31,6 +32,9 @@ public class UserController {
         return ResponseEntity.ok(loginService.login(loginDto));
     }
 
+//    @PostMapping("/user/login/google")
+//    public ResponseEntity<?> googleLogin(@Re)
+
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
         return ResponseEntity.ok(userService.findAllUser());
@@ -48,7 +52,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
-            @RequestPart @Valid CreateUserDto createUserDto,
+            @RequestPart CreateUserDto createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
         if (userProfileImage != null) {
             log.info("이미지 업로드 확인");
@@ -67,6 +71,10 @@ public class UserController {
         userService.deleteUser(userAccountNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+//    @PatchMapping("/admin/user")
+//    public ResponseEntity<?> updateUser(@RequestBody AdminUpdateUserDto adminUpdateUserDto) throws {
+//    }
 
 
 }

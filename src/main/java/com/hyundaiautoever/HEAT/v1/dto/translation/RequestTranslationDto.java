@@ -19,5 +19,5 @@ public class RequestTranslationDto {
     private Long userAccountNo;
     @Length(min = 2, max = 2000)
     private String requestText;
-    private String resultLanguageCode;
+    private String resultLanguageName;
 }

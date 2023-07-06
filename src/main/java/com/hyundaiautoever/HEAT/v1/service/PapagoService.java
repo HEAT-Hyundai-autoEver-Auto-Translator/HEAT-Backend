@@ -47,8 +47,10 @@ public class PapagoService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 중국어가 번역 요청에 포함된 경우 타겟 언어 코드 변환 (zh -> zh-CN : 파파고 중국어 간체자 코드)
-        String requestLanguageCode = getAdjustedLanguageCode(languageService.detectLanguageType(requestTranslationDto).getLanguageCode());
-        String resultLanguageCode = getAdjustedLanguageCode(requestTranslationDto.getResultLanguageCode());
+        String requestLanguageCode = getAdjustedLanguageCode(
+                languageService.detectLanguageType(requestTranslationDto).getLanguageCode());
+        String resultLanguageCode = getAdjustedLanguageCode(
+                languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()).getLanguageCode());
 
         // Http 요청 바디 생성
         ObjectNode papagoRequestBody = objectMapper.createObjectNode();

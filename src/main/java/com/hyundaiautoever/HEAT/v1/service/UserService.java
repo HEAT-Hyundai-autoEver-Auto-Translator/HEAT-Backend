@@ -80,7 +80,7 @@ public class UserService {
     public UserDto createUser(CreateUserDto createUserDto, Optional<MultipartFile> userProfileImage)
             throws UserAlreadyExistException, IOException {
 
-        if (userRepository.findByUserEmail(createUserDto.getUserEmail()) != null) {
+        if (userRepository.findByUserEmail(createUserDto.getUserEmail()).isPresent()) {
             throw new UserAlreadyExistException("해당 이메일로 가입한 유저가 이미 존재합니다.");
         }
         User user = new User();
@@ -96,7 +96,7 @@ public class UserService {
         String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
         user.setProfileImageUrl(userProfileImageUrl);
         //유저 언어 세팅
-        user.setLanguage(languageRepository.findByLanguageCode(createUserDto.getLanguageCode()));
+        user.setLanguage(languageRepository.findByLanguageName(createUserDto.getLanguageName()));
         //유저 가입일 세팅
         user.setSignupDate(LocalDate.now());
         return (userMapper.toUserDto(userRepository.save(user)));
@@ -114,11 +114,6 @@ public class UserService {
             throws IOException {
 
         User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
-        //유저 이메일 업데이트
-        String newUserEmail = updateUserDto.getUserEmail();
-        if (validCheck(newUserEmail, user.getUserEmail())) {
-            user.setUserEmail(newUserEmail);
-        }
         //유저 비밀번호 업데이트
         String newPassword = updateUserDto.getPassword();
         if (passwordValidCheck(newPassword, user.getPasswordHash())) {
@@ -137,9 +132,9 @@ public class UserService {
             user.setProfileImageUrl(userProfileImageUrl);
         }
         //유저 언어 업데이트
-        String newLanguageCode = updateUserDto.getLanguageCode();
-        if (validCheck(newLanguageCode, user.getLanguage().getLanguageCode())) {
-            user.setLanguage(languageRepository.findByLanguageCode(newLanguageCode));
+        String newLanguageName = updateUserDto.getLanguageName();
+        if (validCheck(newLanguageName, user.getLanguage().getLanguageName())) {
+            user.setLanguage(languageRepository.findByLanguageName(newLanguageName));
         }
         return (userMapper.toUserDto(userRepository.save(user)));
     }

@@ -116,7 +116,7 @@ public class TranslationService {
                 languageService.detectLanguageType(requestTranslationDto));
         //ResultLanguage No 세팅
         emptyRequstTranslation.setResultLanguage(
-                languageRepository.findByLanguageCode(requestTranslationDto.getResultLanguageCode()));
+                languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()));
         //CreateDatetime 세팅
         emptyRequstTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));
         //RequestText 세팅
