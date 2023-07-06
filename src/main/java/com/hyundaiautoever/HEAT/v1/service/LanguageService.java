@@ -11,6 +11,7 @@ import java.util.*;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.langdetect.OptimaizeLangDetector;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.tika.language.detect.LanguageResult;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
@@ -94,6 +96,11 @@ public class LanguageService {
     public Language detectLanguageType(RequestTranslationDto requestTranslationDto) {
         LanguageDetector detector = new OptimaizeLangDetector().loadModels();
         LanguageResult result = detector.detect(requestTranslationDto.getRequestText());
+        String resultLanguageCode = result.getLanguage();
+        if (resultLanguageCode.equals("br")) {
+            resultLanguageCode = "en";
+        }
+        log.info(result.getLanguage());
         return languageRepository.findByLanguageCode(result.getLanguage());
     }
 }

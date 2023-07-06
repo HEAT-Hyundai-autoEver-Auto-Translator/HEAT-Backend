@@ -31,7 +31,7 @@ public class UserController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
                 .header("Set-Cookie", "refreshToken=" + loginResponseDto.getRefreshToken())
-                .body("Access 토큰과 Refresh 토큰이 쿠키에 담겨 있습니다.");
+                .body(loginResponseDto);
     }
 
     @PostMapping("/user/login/google")
@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
                 .header("Set-Cookie", "refreshToken=" + loginResponseDto.getRefreshToken())
-                .body("Access 토큰과 Refresh 토큰이 쿠키에 담겨 있습니다.");
+                .body(loginResponseDto);
     }
 
     @GetMapping("/user")
