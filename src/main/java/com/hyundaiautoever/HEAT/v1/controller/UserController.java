@@ -66,15 +66,16 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/admin/user")
     public ResponseEntity<?> deleteUser(@RequestParam(value = "uid") Long userAccountNo) {
         userService.deleteUser(userAccountNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @PatchMapping("/admin/user")
-//    public ResponseEntity<?> updateUser(@RequestBody AdminUpdateUserDto adminUpdateUserDto) throws {
-//    }
+    @PatchMapping("/admin/user")
+    public ResponseEntity<?> updateUser(@RequestBody AdminUpdateUserDto adminUpdateUserDto) {
+        return ResponseEntity.ok(userService.updateUserRole(adminUpdateUserDto));
+    }
 
 
 }

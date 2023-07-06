@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
+import com.hyundaiautoever.HEAT.v1.dto.user.AdminUpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UserDto;
@@ -139,6 +140,17 @@ public class UserService {
         return (userMapper.toUserDto(userRepository.save(user)));
     }
 
+
+    public UserDto updateUserRole(AdminUpdateUserDto adminUpdateUserDto) {
+        User user = userRepository.findByUserAccountNo(adminUpdateUserDto.getUserAccountNo());
+        if (adminUpdateUserDto.getUserRole().equals("user")) {
+            user.setUserRole(UserRole.user);
+        } else {
+            user.setUserRole(UserRole.admin);
+        }
+        userRepository.save(user);
+        return (userMapper.toUserDto(user));
+    }
 
     /**
      * 유저를 삭제한다.
