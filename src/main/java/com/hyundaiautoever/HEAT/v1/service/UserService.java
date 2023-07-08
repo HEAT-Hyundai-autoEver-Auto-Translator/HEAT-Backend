@@ -122,7 +122,7 @@ public class UserService {
         //유저 이름 업데이트
         user.setUserName(updateUserDto.getUserName());
         //유저 프로필 사진 업데이트
-        if (!userProfileImage.get().isEmpty()) {
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             //기존 이미지 삭제
             s3Service.removeS3File(user.getProfileImageUrl());
             String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
