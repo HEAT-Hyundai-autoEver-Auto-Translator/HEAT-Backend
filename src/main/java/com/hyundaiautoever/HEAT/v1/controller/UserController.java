@@ -62,7 +62,7 @@ public class UserController {
     public ResponseEntity<?> createUser(
             @RequestPart CreateUserDto createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
-        if (userProfileImage != null) {
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             log.info("이미지 업로드 확인");
         }
         return ResponseEntity.ok(userService.createUser(createUserDto, userProfileImage));
