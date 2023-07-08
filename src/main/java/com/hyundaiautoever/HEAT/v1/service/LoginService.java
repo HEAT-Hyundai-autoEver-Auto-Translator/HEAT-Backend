@@ -52,29 +52,16 @@ public class LoginService {
                 .filter(m -> passwordEncoder.matches(loginDto.getUserPassword(), m.getPasswordHash()))
                 .orElse(null);
 
-        //토큰 발급 및 refresh 토큰 저장
-        String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
-        String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
-        user.setRefreshToken(newRefreshToken);
-        userRepository.save(user);
-
-        // loginResponseDto 생성
-        LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                .userAccountNo(user.getUserAccountNo())
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
-
-        return loginResponseDto;
+        return getLoginResponseDto(user);
     }
 
     public LoginResponseDto googleLogin (String googleAccessToken) throws IOException {
         //1. 구글에 유저 정보 받아오기
         GoogleResponseDto googleUserInfo = googleService.getUserInfo(googleAccessToken);
         //2. 메일 정보로 현재 등록된 유저인지 확인
-        User user = userRepository.findByUserEmail(googleUserInfo.getEmail()).get();
+        Optional<User> user = userRepository.findByUserEmail(googleUserInfo.getEmail());
 
-        if (user == null) {
+        if (user.isEmpty()) {
             //3. 새로운 유저일 경우 DB에 저장
             User newUser = new User();
             newUser.setUserEmail(googleUserInfo.getEmail());
@@ -90,15 +77,21 @@ public class LoginService {
             }
             newUser.setSignupDate(LocalDate.now());
             newUser.setLastAccessDate(LocalDate.now());
-            user = userRepository.save(newUser);
+            User savedUser = userRepository.save(newUser);
+            return getLoginResponseDto(savedUser);
         }
+        return getLoginResponseDto(user.get());
+    }
 
+    private LoginResponseDto getLoginResponseDto(User user) {
         //유저에 대한 토큰 발급 후 리턴
         //토큰 발급 및 refresh 토큰 저장
         String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
         String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
         user.setRefreshToken(newRefreshToken);
-//        userRepository.save(user);
+
+        //lastAccess Date 수정
+        user.setLastAccessDate(LocalDate.now());
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
@@ -106,7 +99,6 @@ public class LoginService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
-
         return loginResponseDto;
     }
 

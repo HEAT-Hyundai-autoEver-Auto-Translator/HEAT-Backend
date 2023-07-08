@@ -158,21 +158,4 @@ public class UserService {
         s3Service.removeS3File(user.getProfileImageUrl());
         userRepository.deleteByUserAccountNo(userAccountNo);
     }
-
-
-//    private boolean validCheck(String newValue, String oldValue) {
-//        if (newValue != null && !newValue.equals(oldValue) && newValue.length() != 0) { // StringUtils.hasText, 검증 내용 없애기
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    private boolean passwordValidCheck(String newPassword, String oldPasswordHash) {
-//        //검증조건 이후에 추가하기
-//        if (newPassword != null && newPassword.length() != 0 && passwordEncoder.matches(newPassword, oldPasswordHash)) {
-//            return true;
-//        }
-//        return false;
-//    }
-
 }
