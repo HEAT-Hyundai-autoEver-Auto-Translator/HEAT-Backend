@@ -43,7 +43,7 @@ public class TestDataInit {
         Language chinese = new Language();
         chinese.setLanguageNo(3);
         chinese.setLanguageName("Chinese");
-        chinese.setLanguageCode("zh");
+        chinese.setLanguageCode("zh-CN");
         languageRepository.save(chinese);
 
         Language spanish = new Language();

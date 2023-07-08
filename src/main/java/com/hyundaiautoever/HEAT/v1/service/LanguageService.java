@@ -53,12 +53,12 @@ public class LanguageService {
 
     static {
         List<LanguageCodePair> supportedPairs = Arrays.asList(new LanguageCodePair("ko", "en"),
-                new LanguageCodePair("ko", "zh"), new LanguageCodePair("ko", "vi"),
+                new LanguageCodePair("ko", "zh-CN"), new LanguageCodePair("ko", "vi"),
                 new LanguageCodePair("ko", "th"), new LanguageCodePair("ko", "id"),
                 new LanguageCodePair("ko", "fr"), new LanguageCodePair("ko", "es"),
                 new LanguageCodePair("ko", "ru"), new LanguageCodePair("ko", "de"),
                 new LanguageCodePair("ko", "it"), new LanguageCodePair("en", "ja"),
-                new LanguageCodePair("en", "zh"), new LanguageCodePair("en", "vi"),
+                new LanguageCodePair("en", "zh-CN"), new LanguageCodePair("en", "vi"),
                 new LanguageCodePair("en", "th"), new LanguageCodePair("en", "id"),
                 new LanguageCodePair("en", "fr"));
 

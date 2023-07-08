@@ -34,6 +34,11 @@ LANGUAGES=(
     "Vietnamese"
 )
 
+for key in "${!TEXTS[@]}"; do
+    echo "Language: $key"
+    echo "Text: ${TEXTS[$key]}"
+done
+
 for from_language in "${LANGUAGES[@]}"; do
     for to_language in "${LANGUAGES[@]}"; do
         if [ "$from_language" != "$to_language" ]; then
