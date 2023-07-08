@@ -94,8 +94,7 @@ public class UserService {
         //유저 권한 세팅
         user.setUserRole(UserRole.user);
         //유저 이미지 url 세팅
-        log.warn(userProfileImage.get().getContentType());
-        if (!userProfileImage.get().isEmpty()) {
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
             user.setProfileImageUrl(userProfileImageUrl);
         }
