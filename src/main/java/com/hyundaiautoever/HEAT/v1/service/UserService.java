@@ -94,8 +94,11 @@ public class UserService {
         //유저 권한 세팅
         user.setUserRole(UserRole.user);
         //유저 이미지 url 세팅
-        String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
-        user.setProfileImageUrl(userProfileImageUrl);
+        log.warn(userProfileImage.get().toString());
+        if (userProfileImage.get() == null) {
+            String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
+            user.setProfileImageUrl(userProfileImageUrl);
+        }
         //유저 언어 세팅
         user.setLanguage(languageRepository.findByLanguageName(createUserDto.getLanguageName()));
         //유저 가입일 세팅
