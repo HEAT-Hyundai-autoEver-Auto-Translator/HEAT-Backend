@@ -60,7 +60,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
-            @RequestPart CreateUserDto createUserDto,
+            @ModelAttribute CreateUserDto createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
         if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             log.info("이미지 업로드 확인");
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUser(@RequestPart UpdateUserDto updateUserDto,
+    public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDto updateUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws IOException {
         return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
     }
