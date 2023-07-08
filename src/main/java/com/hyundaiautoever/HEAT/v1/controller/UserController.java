@@ -72,9 +72,10 @@ public class UserController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDto updateUserDto,
+    public ResponseEntity<?> updateUser(@RequestPart String updateUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws IOException {
-        return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
+        UpdateUserDto updateUserDtoMapped = new ObjectMapper().readValue(updateUserDto, UpdateUserDto.class);
+        return ResponseEntity.ok(userService.updateUser(updateUserDtoMapped, userProfileImage));
     }
 
     @DeleteMapping("/admin/user")
