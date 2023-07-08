@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyundaiautoever.HEAT.v1.dto.user.*;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.LoginService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.DocFlavor;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,12 +62,13 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
-            @ModelAttribute CreateUserDto createUserDto,
+            @RequestPart String createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
+        CreateUserDto createUserDtoMapped = new ObjectMapper().readValue(createUserDto, CreateUserDto.class);
         if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             log.info("이미지 업로드 확인");
         }
-        return ResponseEntity.ok(userService.createUser(createUserDto, userProfileImage));
+        return ResponseEntity.ok(userService.createUser(createUserDtoMapped, userProfileImage));
     }
 
     @PatchMapping("/user")
