@@ -78,6 +78,7 @@ public class S3Service {
 
 
     public void removeS3File(String url) {
+        if (url == null) {return;}
         String prefix = "https://heat-back-s3.s3.ap-northeast-2.amazonaws.com/";
         String key = url.substring(prefix.length());
         amazonS3.deleteObject(BUCKET_NAME, key);
