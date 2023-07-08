@@ -6,3 +6,5 @@ public class UserAlreadyExistException extends Exception{
         super(message);
     }
 }
+
+// 전역적으로 처리할 수 있는

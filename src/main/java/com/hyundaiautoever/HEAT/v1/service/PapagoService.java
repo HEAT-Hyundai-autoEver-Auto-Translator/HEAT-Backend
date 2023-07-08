@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hyundaiautoever.HEAT.v1.dto.translation.PapagoResponseDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
+import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.translation.TranslationRepository;
@@ -89,4 +90,9 @@ public class PapagoService {
     private String getAdjustedLanguageCode(String languageCode) {
         return DB_CHINESE_CODE.equals(languageCode) ? PAPAGO_CHINESE_CODE : languageCode;
     }
+
+//    public Language papagoLanguageDetection(RequestTranslationDto requestTranslationDto) {
+//
+//
+//    }
 }

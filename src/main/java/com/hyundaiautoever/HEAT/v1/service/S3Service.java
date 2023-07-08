@@ -39,7 +39,7 @@ public class S3Service {
         if (multipartFile == null) {
             log.info("file is null");
         }
-        File uploadFile = convert(multipartFile)
+        File uploadFile = convertFile(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
         return upload(uploadFile);
     }
@@ -47,7 +47,7 @@ public class S3Service {
 
     private String upload(File uploadFile) {
         String fileName = "profile-image/" + UUID.randomUUID().toString() + "/" + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
+        String uploadImageUrl = putImageOnS3(uploadFile, fileName);
         // 로컬 임시 저장 File 삭제
         uploadFile.delete();
 
@@ -55,7 +55,7 @@ public class S3Service {
     }
 
 
-    private String putS3(File uploadFile, String fileName) {
+    private String putImageOnS3(File uploadFile, String fileName) {
         amazonS3.putObject(
                 new PutObjectRequest(BUCKET_NAME, fileName, uploadFile)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
@@ -64,14 +64,14 @@ public class S3Service {
     }
 
 
-    private Optional<File> convert(MultipartFile file) throws  IOException {
+    private Optional<File> convertFile(MultipartFile file) throws  IOException {
         log.info(file.getOriginalFilename());
-        File convertFile = new File(file.getOriginalFilename());
-        if(convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+        File convertFileFile = new File(file.getOriginalFilename());
+        if(convertFileFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convertFileFile)) {
                 fos.write(file.getBytes());
             }
-            return Optional.of(convertFile);
+            return Optional.of(convertFileFile);
         }
         return Optional.empty();
     }

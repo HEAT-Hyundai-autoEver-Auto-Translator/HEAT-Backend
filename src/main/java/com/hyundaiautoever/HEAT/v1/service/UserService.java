@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional   // 더 전역으로 선언할 수 있는 방법 AOP 활용해보기
 @Slf4j
 public class UserService {
 
@@ -116,15 +116,9 @@ public class UserService {
 
         User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
         //유저 비밀번호 업데이트
-        String newPassword = updateUserDto.getPassword();
-        if (passwordValidCheck(newPassword, user.getPasswordHash())) {
-            user.setPasswordHash(newPassword);
-        }
+        user.setPasswordHash(updateUserDto.getPassword());
         //유저 이름 업데이트
-        String newUserName = updateUserDto.getUserName();
-        if (validCheck(newUserName, user.getUserName())) {
-            user.setUserName(newUserName);
-        }
+        user.setUserName(updateUserDto.getUserName());
         //유저 프로필 사진 업데이트
         if (userProfileImage.isPresent()) {
             //기존 이미지 삭제
@@ -133,10 +127,7 @@ public class UserService {
             user.setProfileImageUrl(userProfileImageUrl);
         }
         //유저 언어 업데이트
-        String newLanguageName = updateUserDto.getLanguageName();
-        if (validCheck(newLanguageName, user.getLanguage().getLanguageName())) {
-            user.setLanguage(languageRepository.findByLanguageName(newLanguageName));
-        }
+        user.setLanguage(languageRepository.findByLanguageName(updateUserDto.getLanguageName()));
         return (userMapper.toUserDto(user));
     }
 
@@ -148,7 +139,7 @@ public class UserService {
      */
     public UserDto updateUserRole(AdminUpdateUserDto adminUpdateUserDto) {
         User user = userRepository.findByUserAccountNo(adminUpdateUserDto.getUserAccountNo());
-        if (adminUpdateUserDto.getUserRole().equals("user")) {
+        if (adminUpdateUserDto.getUserRole().equals("user")) { // 상수를 사용할 것 -> 그 때의 차이에 대해 명확히 알아둘 것
             user.setUserRole(UserRole.user);
         } else {
             user.setUserRole(UserRole.admin);
@@ -169,19 +160,19 @@ public class UserService {
     }
 
 
-    private boolean validCheck(String newValue, String oldValue) {
-        if (newValue != null && !newValue.equals(oldValue) && newValue.length() != 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean passwordValidCheck(String newPassword, String oldPasswordHash) {
-        //검증조건 이후에 추가하기
-        if (newPassword != null && newPassword.length() != 0 && passwordEncoder.matches(newPassword, oldPasswordHash)) {
-            return true;
-        }
-        return false;
-    }
+//    private boolean validCheck(String newValue, String oldValue) {
+//        if (newValue != null && !newValue.equals(oldValue) && newValue.length() != 0) { // StringUtils.hasText, 검증 내용 없애기
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    private boolean passwordValidCheck(String newPassword, String oldPasswordHash) {
+//        //검증조건 이후에 추가하기
+//        if (newPassword != null && newPassword.length() != 0 && passwordEncoder.matches(newPassword, oldPasswordHash)) {
+//            return true;
+//        }
+//        return false;
+//    }
 
 }

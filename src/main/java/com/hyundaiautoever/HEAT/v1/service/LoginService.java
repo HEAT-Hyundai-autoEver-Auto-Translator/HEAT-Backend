@@ -72,9 +72,9 @@ public class LoginService {
         //1. 구글에 유저 정보 받아오기
         GoogleResponseDto googleUserInfo = googleService.getUserInfo(googleAccessToken);
         //2. 메일 정보로 현재 등록된 유저인지 확인
-        Optional<User> user = userRepository.findByUserEmail(googleUserInfo.getEmail());
+        User user = userRepository.findByUserEmail(googleUserInfo.getEmail()).get();
 
-        if (user.isEmpty()) {
+        if (user == null) {
             //3. 새로운 유저일 경우 DB에 저장
             User newUser = new User();
             newUser.setUserEmail(googleUserInfo.getEmail());
@@ -90,19 +90,19 @@ public class LoginService {
             }
             newUser.setSignupDate(LocalDate.now());
             newUser.setLastAccessDate(LocalDate.now());
-            user = Optional.of(userRepository.save(newUser));
+            user = userRepository.save(newUser);
         }
 
         //유저에 대한 토큰 발급 후 리턴
         //토큰 발급 및 refresh 토큰 저장
-        String newAccessToken = makeJwToken(user.get(), ACCESS_TOKEN_DURATION);
-        String newRefreshToken = makeJwToken(user.get(), REFRESH_TOKEN_DURATION);
-        user.get().setRefreshToken(newRefreshToken);
-        userRepository.save(user.get());
+        String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
+        String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
+        user.setRefreshToken(newRefreshToken);
+//        userRepository.save(user);
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                .userAccountNo(user.get().getUserAccountNo())
+                .userAccountNo(user.getUserAccountNo())
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
