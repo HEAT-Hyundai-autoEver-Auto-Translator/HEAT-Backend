@@ -45,6 +45,11 @@ public class UserController {
                 .body(loginResponseDto);
     }
 
+//    @PostMapping("/user/refresh-token")
+//    public ResponseEntity<?> verifyRefreshToken(@RequestBody HashMap<String, String> refreshToken) {
+//
+//    }
+
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
         return ResponseEntity.ok(userService.findAllUser());

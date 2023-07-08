@@ -16,6 +16,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nullable;
@@ -118,7 +119,9 @@ public class UserService {
 
         User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
         //유저 비밀번호 업데이트
-        user.setPasswordHash(updateUserDto.getPassword());
+        if (StringUtils.hasText(updateUserDto.getPassword())) {
+            user.setPasswordHash(updateUserDto.getPassword());
+        }
         //유저 이름 업데이트
         user.setUserName(updateUserDto.getUserName());
         //유저 프로필 사진 업데이트
