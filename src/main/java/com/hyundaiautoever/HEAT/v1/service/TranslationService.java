@@ -105,6 +105,10 @@ public class TranslationService {
         return translationMapper.toTranslationDtoList(translationRepository.findAll());
     }
 
+    public void deleteTranslation(Long translationNo) {
+        translationRepository.deleteById(translationNo);
+    }
+
     public Translation saveTranslationWithoutResult(RequestTranslationDto requestTranslationDto) {
 
         Translation emptyRequstTranslation = new Translation();

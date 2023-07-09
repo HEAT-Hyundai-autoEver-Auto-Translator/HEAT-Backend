@@ -10,9 +10,7 @@ import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 import com.hyundaiautoever.HEAT.v1.util.UserMapper;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +32,7 @@ public class LoginService {
 
     @Value("${spring.jwt.secret}")
     private String JWT_SECRET;
+    private final String JWT_ISSUER = "HEAT";
 //    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
 //    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
     private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(5).toMillis();
@@ -52,29 +51,16 @@ public class LoginService {
                 .filter(m -> passwordEncoder.matches(loginDto.getUserPassword(), m.getPasswordHash()))
                 .orElse(null);
 
-        //토큰 발급 및 refresh 토큰 저장
-        String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
-        String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
-        user.setRefreshToken(newRefreshToken);
-        userRepository.save(user);
-
-        // loginResponseDto 생성
-        LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                .userAccountNo(user.getUserAccountNo())
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
-
-        return loginResponseDto;
+        return getLoginResponseDto(user);
     }
 
     public LoginResponseDto googleLogin (String googleAccessToken) throws IOException {
         //1. 구글에 유저 정보 받아오기
         GoogleResponseDto googleUserInfo = googleService.getUserInfo(googleAccessToken);
         //2. 메일 정보로 현재 등록된 유저인지 확인
-        User user = userRepository.findByUserEmail(googleUserInfo.getEmail()).get();
+        Optional<User> user = userRepository.findByUserEmail(googleUserInfo.getEmail());
 
-        if (user == null) {
+        if (user.isEmpty()) {
             //3. 새로운 유저일 경우 DB에 저장
             User newUser = new User();
             newUser.setUserEmail(googleUserInfo.getEmail());
@@ -90,15 +76,21 @@ public class LoginService {
             }
             newUser.setSignupDate(LocalDate.now());
             newUser.setLastAccessDate(LocalDate.now());
-            user = userRepository.save(newUser);
+            User savedUser = userRepository.save(newUser);
+            return getLoginResponseDto(savedUser);
         }
+        return getLoginResponseDto(user.get());
+    }
 
+    private LoginResponseDto getLoginResponseDto(User user) {
         //유저에 대한 토큰 발급 후 리턴
         //토큰 발급 및 refresh 토큰 저장
         String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
         String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
         user.setRefreshToken(newRefreshToken);
-//        userRepository.save(user);
+
+        //lastAccess Date 수정
+        user.setLastAccessDate(LocalDate.now());
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
@@ -106,7 +98,6 @@ public class LoginService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
-
         return loginResponseDto;
     }
 
@@ -115,7 +106,7 @@ public class LoginService {
 
         String jwToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer("HEAT")
+                .setIssuer(JWT_ISSUER)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + duration))
                 .claim("userAccountNo", user.getUserAccountNo().toString())
@@ -126,5 +117,22 @@ public class LoginService {
         return jwToken;
     }
 
+//    public LoginResponseDto validateToken(String refreshToken) {
+//        Claims claims;
+//        try {
+//            Jws<Claims> jws = Jwts.parser()
+//                    .setSigningKey(JWT_SECRET.getBytes())
+//                    .parseClaimsJws(refreshToken);
+//            claims = jws.getBody();
+//            if (!JWT_ISSUER.equals(claims.getIssuer())){
+//                throw new RuntimeException("토큰 발행 기관이 불일치합니다.");
+//            }
+//            if (claims.getExpiration().before(new Date())){
+//                throw new RuntimeException("토큰 만료 기간이 지났습니다.");
+//            }
+//        } catch (Exception e) {
+//            throw new RuntimeException("잘못된 토큰입니다.");
+//        }
+//    }
 
 }

@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyundaiautoever.HEAT.v1.dto.user.*;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.LoginService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.DocFlavor;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,6 +45,11 @@ public class UserController {
                 .body(loginResponseDto);
     }
 
+//    @PostMapping("/user/refresh-token")
+//    public ResponseEntity<?> verifyRefreshToken(@RequestBody HashMap<String, String> refreshToken) {
+//
+//    }
+
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {
         return ResponseEntity.ok(userService.findAllUser());
@@ -60,18 +67,20 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
-            @RequestPart CreateUserDto createUserDto,
+            @RequestPart String createUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
-        if (userProfileImage != null) {
+        CreateUserDto createUserDtoMapped = new ObjectMapper().readValue(createUserDto, CreateUserDto.class);
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             log.info("이미지 업로드 확인");
         }
-        return ResponseEntity.ok(userService.createUser(createUserDto, userProfileImage));
+        return ResponseEntity.ok(userService.createUser(createUserDtoMapped, userProfileImage));
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUser(@RequestPart UpdateUserDto updateUserDto,
+    public ResponseEntity<?> updateUser(@RequestPart String updateUserDto,
             @RequestPart Optional<MultipartFile> userProfileImage) throws IOException {
-        return ResponseEntity.ok(userService.updateUser(updateUserDto, userProfileImage));
+        UpdateUserDto updateUserDtoMapped = new ObjectMapper().readValue(updateUserDto, UpdateUserDto.class);
+        return ResponseEntity.ok(userService.updateUser(updateUserDtoMapped, userProfileImage));
     }
 
     @DeleteMapping("/admin/user")

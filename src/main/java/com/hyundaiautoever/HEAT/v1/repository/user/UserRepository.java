@@ -10,7 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     User findByUserAccountNo(Long userAccountNo);
     Optional<User> findByUserEmail(String userEmail);
-    List<User> findByUserRole(String userRole);
     List<User> findUserByUserName(String userName);
     void deleteByUserAccountNo(Long userAccountNo);
 }

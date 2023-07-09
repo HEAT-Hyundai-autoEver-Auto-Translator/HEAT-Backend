@@ -113,7 +113,6 @@ public class TestDataInit {
         User user1 = new User();
         user1.setLastAccessDate(now);
         user1.setPasswordHash(passwordEncoder.encode("password1"));
-        user1.setProfileImageUrl("url1");
         user1.setRefreshToken("refresh1");
         user1.setSignupDate(now);
         user1.setUserEmail("test1@example.com");
@@ -125,7 +124,6 @@ public class TestDataInit {
         User user2 = new User();
         user2.setLastAccessDate(now);
         user2.setPasswordHash(passwordEncoder.encode("password2"));
-        user2.setProfileImageUrl("url2");
         user2.setRefreshToken("refresh2");
         user2.setSignupDate(now);
         user2.setUserEmail("test2@example.com");
@@ -137,7 +135,6 @@ public class TestDataInit {
         User user3 = new User();
         user3.setLastAccessDate(now);
         user3.setPasswordHash(passwordEncoder.encode("password3"));
-        user3.setProfileImageUrl("url3");
         user3.setRefreshToken("refresh3");
         user3.setSignupDate(now);
         user3.setUserEmail("test3@example.com");
@@ -149,7 +146,6 @@ public class TestDataInit {
         User user4 = new User();
         user4.setLastAccessDate(now);
         user4.setPasswordHash(passwordEncoder.encode("password4"));
-        user4.setProfileImageUrl("url4");
         user4.setRefreshToken("refresh4");
         user4.setSignupDate(now);
         user4.setUserEmail("test4@example.com");
@@ -161,7 +157,6 @@ public class TestDataInit {
         User user5 = new User();
         user5.setLastAccessDate(now);
         user5.setPasswordHash(passwordEncoder.encode("password5"));
-        user5.setProfileImageUrl("url5");
         user5.setRefreshToken("refresh5");
         user5.setSignupDate(now);
         user5.setUserEmail("test5@example.com");

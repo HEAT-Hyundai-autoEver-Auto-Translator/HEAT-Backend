@@ -16,6 +16,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nullable;
@@ -81,7 +82,7 @@ public class UserService {
     public UserDto createUser(CreateUserDto createUserDto, Optional<MultipartFile> userProfileImage)
             throws UserAlreadyExistException, IOException {
 
-        if (!userRepository.findByUserEmail(createUserDto.getUserEmail()).isEmpty()) {
+        if (userRepository.findByUserEmail(createUserDto.getUserEmail()).isPresent()) {
             throw new UserAlreadyExistException("해당 이메일로 가입한 유저가 이미 존재합니다.");
         }
         User user = new User();
@@ -94,8 +95,10 @@ public class UserService {
         //유저 권한 세팅
         user.setUserRole(UserRole.user);
         //유저 이미지 url 세팅
-        String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
-        user.setProfileImageUrl(userProfileImageUrl);
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
+            String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
+            user.setProfileImageUrl(userProfileImageUrl);
+        }
         //유저 언어 세팅
         user.setLanguage(languageRepository.findByLanguageName(createUserDto.getLanguageName()));
         //유저 가입일 세팅
@@ -116,11 +119,13 @@ public class UserService {
 
         User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
         //유저 비밀번호 업데이트
-        user.setPasswordHash(updateUserDto.getPassword());
+        if (StringUtils.hasText(updateUserDto.getPassword())) {
+            user.setPasswordHash(passwordEncoder.encode(updateUserDto.getPassword()));
+        }
         //유저 이름 업데이트
         user.setUserName(updateUserDto.getUserName());
         //유저 프로필 사진 업데이트
-        if (userProfileImage.isPresent()) {
+        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             //기존 이미지 삭제
             s3Service.removeS3File(user.getProfileImageUrl());
             String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
@@ -155,24 +160,9 @@ public class UserService {
      */
     public void deleteUser(Long userAccountNo) {
         User user = userRepository.findByUserAccountNo(userAccountNo);
-        s3Service.removeS3File(user.getProfileImageUrl());
+        if (user.getProfileImageUrl() != null) {
+            s3Service.removeS3File(user.getProfileImageUrl());
+        }
         userRepository.deleteByUserAccountNo(userAccountNo);
     }
-
-
-//    private boolean validCheck(String newValue, String oldValue) {
-//        if (newValue != null && !newValue.equals(oldValue) && newValue.length() != 0) { // StringUtils.hasText, 검증 내용 없애기
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    private boolean passwordValidCheck(String newPassword, String oldPasswordHash) {
-//        //검증조건 이후에 추가하기
-//        if (newPassword != null && newPassword.length() != 0 && passwordEncoder.matches(newPassword, oldPasswordHash)) {
-//            return true;
-//        }
-//        return false;
-//    }
-
 }

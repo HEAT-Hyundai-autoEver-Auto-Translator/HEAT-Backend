@@ -82,9 +82,6 @@ public class PapagoService {
         return translationRepository.save(fullRequestTranslation);
     }
 
-
 //    public Language papagoLanguageDetection(RequestTranslationDto requestTranslationDto) {
-//
-//
 //    }
 }
