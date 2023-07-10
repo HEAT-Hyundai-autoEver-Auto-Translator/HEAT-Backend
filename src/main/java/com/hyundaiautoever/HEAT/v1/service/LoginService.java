@@ -10,6 +10,7 @@ import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
+import com.hyundaiautoever.HEAT.v1.util.JwtUtils;
 import com.hyundaiautoever.HEAT.v1.util.UserMapper;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import io.jsonwebtoken.*;
@@ -39,10 +40,7 @@ import java.util.Optional;
 @Slf4j
 public class LoginService {
 
-//    @Value("${spring.jwt.secret}")
-    private String JWT_SECRET = "12345678901234567890121234567890123456789012!";
-    private final String JWT_ISSUER = "HEAT";
-//    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
+    //    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
 //    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
     private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(5).toMillis();
     private final long REFRESH_TOKEN_DURATION = Duration.ofMinutes(10).toMillis();
@@ -51,6 +49,7 @@ public class LoginService {
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
     private final GoogleService googleService;
+    private final JwtUtils jwtUtils;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     public LoginResponseDto login(LoginDto loginDto) {
@@ -62,6 +61,8 @@ public class LoginService {
 
         return getLoginResponseDto(user);
     }
+
+
 
     public LoginResponseDto googleLogin (String googleAccessToken) throws IOException {
         //1. 구글에 유저 정보 받아오기
@@ -92,7 +93,7 @@ public class LoginService {
     }
 
     public LoginResponseDto getAccessTokenWithRefreshToken(String refreshToken) {
-        User user = validateToken(refreshToken);
+        User user = jwtUtils.validateRefreshToken(refreshToken);
         if (user == null) {
             throw new JwtException("유효한 토큰이 아닙니다.");
         }
@@ -102,8 +103,8 @@ public class LoginService {
     private LoginResponseDto getLoginResponseDto(User user) {
         //유저에 대한 토큰 발급 후 리턴
         //토큰 발급 및 refresh 토큰 저장
-        String newAccessToken = makeJwToken(user, ACCESS_TOKEN_DURATION);
-        String newRefreshToken = makeJwToken(user, REFRESH_TOKEN_DURATION);
+        String newAccessToken = jwtUtils.makeJwToken(user, ACCESS_TOKEN_DURATION);
+        String newRefreshToken = jwtUtils.makeJwToken(user, REFRESH_TOKEN_DURATION);
         user.setRefreshToken(newRefreshToken);
 
         //lastAccess Date 수정
@@ -117,46 +118,4 @@ public class LoginService {
                 .build();
         return loginResponseDto;
     }
-
-    public String makeJwToken(User user, long duration) {
-        Date now = new Date();
-
-        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
-        String jwToken = Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer(JWT_ISSUER)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + duration))
-                .claim("userAccountNo", user.getUserAccountNo().toString())
-                .claim("userName", user.getUserName())
-                .claim("userRole", user.getUserRole().toString())
-                .signWith(key)
-                .compact();
-        return jwToken;
-    }
-
-    public User validateToken(String refreshToken) {
-        User user;
-        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
-        Jwt<?, ?> jwt;
-        try {
-            jwt = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .requireIssuer(JWT_ISSUER)
-                    .build()
-                    .parse(refreshToken);
-            log.info(jwt.getBody().toString());
-            Map<String, Object> claims = (Map<String, Object>) jwt.getBody();
-            Long userAccountNo = Long.parseLong(claims.get("userAccountNo").toString());
-            user = userRepository.findByUserAccountNo(userAccountNo);
-            if (!refreshToken.equals(user.getRefreshToken())) {
-                throw new JwtException("저장된 토큰과 불일치합니다.");
-            }
-        } catch(JwtException e){
-            e.printStackTrace();
-            throw e;
-        }
-        return user;
-    }
-
 }
