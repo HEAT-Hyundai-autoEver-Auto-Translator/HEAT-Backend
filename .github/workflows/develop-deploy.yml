@@ -12,7 +12,7 @@ on:
    push:
     branches:
 #      - 'main'
-      - 'HEAT-48'
+      - 'HEAT-52'
 
 jobs:
   Explore-GitHub-Actions:
