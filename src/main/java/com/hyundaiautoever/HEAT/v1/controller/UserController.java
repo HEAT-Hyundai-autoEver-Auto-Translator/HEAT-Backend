@@ -45,10 +45,14 @@ public class UserController {
                 .body(loginResponseDto);
     }
 
-//    @PostMapping("/user/refresh-token")
-//    public ResponseEntity<?> verifyRefreshToken(@RequestBody HashMap<String, String> refreshToken) {
-//
-//    }
+    @PostMapping("/user/refresh-token")
+    public ResponseEntity<?> verifyRefreshToken(@RequestBody HashMap<String, String> refreshToken) {
+        LoginResponseDto loginResponseDto = loginService.getAccessTokenWithRefreshToken(refreshToken.get("refreshToken"));
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
+                .header("Set-Cookie", "refreshToken=" + loginResponseDto.getRefreshToken())
+                .body(loginResponseDto);
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserList() {

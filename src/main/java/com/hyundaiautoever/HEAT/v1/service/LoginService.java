@@ -1,5 +1,7 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.JsonObject;
 import com.hyundaiautoever.HEAT.v1.dto.user.GoogleResponseDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.LoginDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.LoginResponseDto;
@@ -11,6 +13,7 @@ import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 import com.hyundaiautoever.HEAT.v1.util.UserMapper;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -18,20 +21,26 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class LoginService {
 
-    @Value("${spring.jwt.secret}")
-    private String JWT_SECRET;
+//    @Value("${spring.jwt.secret}")
+    private String JWT_SECRET = "12345678901234567890121234567890123456789012!";
     private final String JWT_ISSUER = "HEAT";
 //    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
 //    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
@@ -82,6 +91,14 @@ public class LoginService {
         return getLoginResponseDto(user.get());
     }
 
+    public LoginResponseDto getAccessTokenWithRefreshToken(String refreshToken) {
+        User user = validateToken(refreshToken);
+        if (user == null) {
+            throw new JwtException("유효한 토큰이 아닙니다.");
+        }
+        return getLoginResponseDto(user);
+    }
+
     private LoginResponseDto getLoginResponseDto(User user) {
         //유저에 대한 토큰 발급 후 리턴
         //토큰 발급 및 refresh 토큰 저장
@@ -104,6 +121,7 @@ public class LoginService {
     public String makeJwToken(User user, long duration) {
         Date now = new Date();
 
+        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
         String jwToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(JWT_ISSUER)
@@ -112,27 +130,33 @@ public class LoginService {
                 .claim("userAccountNo", user.getUserAccountNo().toString())
                 .claim("userName", user.getUserName())
                 .claim("userRole", user.getUserRole().toString())
-                .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                .signWith(key)
                 .compact();
         return jwToken;
     }
 
-//    public LoginResponseDto validateToken(String refreshToken) {
-//        Claims claims;
-//        try {
-//            Jws<Claims> jws = Jwts.parser()
-//                    .setSigningKey(JWT_SECRET.getBytes())
-//                    .parseClaimsJws(refreshToken);
-//            claims = jws.getBody();
-//            if (!JWT_ISSUER.equals(claims.getIssuer())){
-//                throw new RuntimeException("토큰 발행 기관이 불일치합니다.");
-//            }
-//            if (claims.getExpiration().before(new Date())){
-//                throw new RuntimeException("토큰 만료 기간이 지났습니다.");
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException("잘못된 토큰입니다.");
-//        }
-//    }
+    public User validateToken(String refreshToken) {
+        User user;
+        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+        Jwt<?, ?> jwt;
+        try {
+            jwt = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .requireIssuer(JWT_ISSUER)
+                    .build()
+                    .parse(refreshToken);
+            log.info(jwt.getBody().toString());
+            Map<String, Object> claims = (Map<String, Object>) jwt.getBody();
+            Long userAccountNo = Long.parseLong(claims.get("userAccountNo").toString());
+            user = userRepository.findByUserAccountNo(userAccountNo);
+            if (!refreshToken.equals(user.getRefreshToken())) {
+                throw new JwtException("저장된 토큰과 불일치합니다.");
+            }
+        } catch(JwtException e){
+            e.printStackTrace();
+            throw e;
+        }
+        return user;
+    }
 
 }
