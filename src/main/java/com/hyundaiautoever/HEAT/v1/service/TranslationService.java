@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
+import com.hyundaiautoever.HEAT.v1.Exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
@@ -73,7 +74,7 @@ public class TranslationService {
         Translation translation = translationRepository.findByTranslationNo(translationNo)
                 .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 데이터 요청입니다."));
         if (translation.getResultText() == null) {
-            throw new NullPointerException("번역 작업이 완료되지 않았습니다.");
+            throw new TranslationNotCompleteException("번역 작업이 완료되지 않았습니다.");
         }
         Optional<TranslationDto> translationDto = Optional.ofNullable(
                 new TranslationDto(translation));
