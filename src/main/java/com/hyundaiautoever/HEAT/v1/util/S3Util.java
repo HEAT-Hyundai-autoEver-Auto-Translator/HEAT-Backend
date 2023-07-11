@@ -39,7 +39,7 @@ public class S3Util {
 
 
     private String upload(File uploadFile) {
-        String fileName = "profile-image/" + UUID.randomUUID().toString() + "/" + uploadFile.getName();
+        String fileName = "profile-image/" + UUID.randomUUID().toString() + "/" + "image";
         String uploadImageUrl = putImageOnS3(uploadFile, fileName);
         // 로컬 임시 저장 File 삭제
         uploadFile.delete();
