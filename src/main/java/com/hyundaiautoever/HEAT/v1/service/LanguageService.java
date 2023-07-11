@@ -93,7 +93,12 @@ public class LanguageService {
         if ("br".equals(resultLanguageCode)) {
             resultLanguageCode = "en";
         }
-        return languageRepository.findByLanguageCode(result.getLanguage());
+        // 임시 코드
+        Language language = languageRepository.findByLanguageCode(resultLanguageCode);
+        if (language == null) {
+            language = languageRepository.findByLanguageNo(2);
+        }
+        return language;
     }
 
     public static boolean isPapagoSupported(Translation translation) {
