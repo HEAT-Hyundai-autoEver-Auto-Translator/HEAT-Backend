@@ -15,26 +15,6 @@ import javax.security.sasl.AuthenticationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-//    @ExceptionHandler(TranslationNotCompleteException.class)
-//    public ResponseEntity<String> handleTranslationNotCompleteException(TranslationNotCompleteException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(TranslationNotFoundException.class)
-//    public ResponseEntity<String> handleTranslationNotFoundException(TranslationNotFoundException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(LanguageDetectionFailureException.class)
-//    public ResponseEntity<String> handleLanguageDetectionFailureException(LanguageDetectionFailureException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(UserAlreadyExistException.class)
-//    public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handlerEntityNotFoundException(EntityNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -53,6 +33,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handlerAuthenticationException(AuthenticationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handlerNullPointerException(AuthenticationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONTINUE);
     }
 
 

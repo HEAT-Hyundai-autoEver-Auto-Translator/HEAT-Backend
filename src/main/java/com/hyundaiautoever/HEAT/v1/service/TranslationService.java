@@ -71,7 +71,7 @@ public class TranslationService {
     public Optional<TranslationDto> getTranslationResult(Long translationNo) {
 
         Translation translation = translationRepository.findByTranslationNo(translationNo)
-                .orElseThrow(() -> new EntityNotFoundException("없는 번역 데이터 요청입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 데이터 요청입니다."));
         if (translation.getResultText() == null) {
             throw new NullPointerException("번역 작업이 완료되지 않았습니다.");
         }
@@ -127,21 +127,6 @@ public class TranslationService {
                 .createDatetime(createDateTime)
                 .requestText(requestTranslationDto.getRequestText())
                 .build();
-//
-//        //User 세팅
-//        emptyRequstTranslation.setUser(userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo())
-//                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다.")));
-//        //requestLanguage 세팅
-//        emptyRequstTranslation.setRequestLanguage(
-//                languageService.detectLanguageType(requestTranslationDto));
-//        //ResultLanguage No 세팅
-//        emptyRequstTranslation.setResultLanguage(
-//                languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()));
-//        //CreateDatetime 세팅
-//        emptyRequstTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));
-//        //RequestText 세팅
-//        emptyRequstTranslation.setRequestText(requestTranslationDto.getRequestText());
-
         return translationRepository.save(emptyRequstTranslation);
     }
 }
