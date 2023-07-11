@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 //    }
 
     @ExceptionHandler(TranslationNotCompleteException.class)
-    public ResponseEntity<String> handlerTranslationNotCompleteException(AuthenticationException ex) {
+    public ResponseEntity<String> handlerTranslationNotCompleteException(TranslationNotCompleteException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.ACCEPTED);
     }
 
