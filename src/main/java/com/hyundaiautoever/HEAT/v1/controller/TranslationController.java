@@ -2,8 +2,6 @@ package com.hyundaiautoever.HEAT.v1.controller;
 
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
-import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
-import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.service.TranslationService;
 
 import java.util.List;
@@ -36,8 +34,7 @@ public class TranslationController {
 
     @GetMapping("/translation/translation-no") // requestVariable
     public ResponseEntity getTranslationResult(
-            @RequestParam(value = "translation-no") Long translationNo)
-            throws TranslationNotFoundException, TranslationNotCompleteException {
+            @RequestParam(value = "translation-no") Long translationNo) {
         Optional<TranslationDto> translationDto = translationService.getTranslationResult(
                 translationNo);
         return ResponseEntity.ok(translationDto);

@@ -1,12 +1,10 @@
-package com.hyundaiautoever.HEAT.v1.service;
+package com.hyundaiautoever.HEAT.v1.util;
 
 import com.hyundaiautoever.HEAT.v1.dto.user.GoogleResponseDto;
-import com.hyundaiautoever.HEAT.v1.dto.user.LoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,7 +13,7 @@ import java.io.IOException;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GoogleService {
+public class GoogleUtil {
 
     private static final String GOOGLE_API = "https://www.googleapis.com/oauth2/v1/userinfo";
 

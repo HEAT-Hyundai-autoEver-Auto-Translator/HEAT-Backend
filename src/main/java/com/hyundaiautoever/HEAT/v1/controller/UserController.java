@@ -2,7 +2,6 @@ package com.hyundaiautoever.HEAT.v1.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyundaiautoever.HEAT.v1.dto.user.*;
-import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.service.LoginService;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.print.DocFlavor;
+import javax.security.sasl.AuthenticationException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class UserController {
     private final LoginService loginService;
 
     @PostMapping("/user/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws AuthenticationException {
         LoginResponseDto loginResponseDto = loginService.login(loginDto);
         return ResponseEntity.ok()
                 .header("Set-Cookie", "accessToken=" + loginResponseDto.getAccessToken())
@@ -72,7 +72,7 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<?> createUser(
             @RequestPart String createUserDto,
-            @RequestPart Optional<MultipartFile> userProfileImage) throws UserAlreadyExistException, IOException {
+            @RequestPart Optional<MultipartFile> userProfileImage) throws IOException {
         CreateUserDto createUserDtoMapped = new ObjectMapper().readValue(createUserDto, CreateUserDto.class);
         if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
             log.info("이미지 업로드 확인");

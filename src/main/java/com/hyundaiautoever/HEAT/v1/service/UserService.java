@@ -5,9 +5,9 @@ import com.hyundaiautoever.HEAT.v1.dto.user.CreateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UpdateUserDto;
 import com.hyundaiautoever.HEAT.v1.dto.user.UserDto;
 import com.hyundaiautoever.HEAT.v1.entity.User;
-import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
+import com.hyundaiautoever.HEAT.v1.util.S3Util;
 import com.hyundaiautoever.HEAT.v1.util.UserMapper;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nullable;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -27,14 +29,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional   // 더 전역으로 선언할 수 있는 방법 AOP 활용해보기
 @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
-    private final S3Service s3Service;
+    private final S3Util s3Util;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     /**
@@ -43,6 +44,7 @@ public class UserService {
      * @return 기존까지의 모든 유저 정보
      **/
     @Nullable
+    @Transactional(readOnly = true)
     public List<UserDto> findAllUser() {
         return userMapper.toUserDtoList(userRepository.findAll());
     }
@@ -55,8 +57,11 @@ public class UserService {
      * @return 유저Dto
      */
     @Nullable
+    @Transactional(readOnly = true)
     public UserDto findUserInformation(Long userAccountNo) {
-        return userMapper.toUserDto(userRepository.findByUserAccountNo(userAccountNo));
+        User user = userRepository.findByUserAccountNo(userAccountNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
+        return userMapper.toUserDto(user);
     }
 
 
@@ -67,8 +72,10 @@ public class UserService {
      * @return 유저Dto 리스트
      */
     @Nullable
+    @Transactional(readOnly = true)
     public List<UserDto> searchUserByUserName(String userName) {
-        return userMapper.toUserDtoList(userRepository.findUserByUserName(userName));
+        List<User> userList = userRepository.findUserByUserName(userName);
+        return userMapper.toUserDtoList(userList);
     }
 
 
@@ -79,30 +86,23 @@ public class UserService {
      * @param userProfileImage 수정된 유저 프로필 이미지
      * @return DB에 저장 후 반환되는 유저 엔티티의 DTO 변환값
      */
+    @Transactional
     public UserDto createUser(CreateUserDto createUserDto, Optional<MultipartFile> userProfileImage)
-            throws UserAlreadyExistException, IOException {
+            throws IOException {
 
         if (userRepository.findByUserEmail(createUserDto.getUserEmail()).isPresent()) {
-            throw new UserAlreadyExistException("해당 이메일로 가입한 유저가 이미 존재합니다.");
+            throw new EntityExistsException("이미 존재하는 계정입니다.");
         }
-        User user = new User();
-        //유저 이메일 세팅
-        user.setUserEmail(createUserDto.getUserEmail());
-        //유저 비밀번호 세팅
-        user.setPasswordHash(passwordEncoder.encode(createUserDto.getPassword()));
-        //유저 네임 세팅
-        user.setUserName(createUserDto.getUserName());
-        //유저 권한 세팅
-        user.setUserRole(UserRole.user);
-        //유저 이미지 url 세팅
-        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
-            String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
-            user.setProfileImageUrl(userProfileImageUrl);
-        }
-        //유저 언어 세팅
-        user.setLanguage(languageRepository.findByLanguageName(createUserDto.getLanguageName()));
-        //유저 가입일 세팅
-        user.setSignupDate(LocalDate.now());
+        String userProfileImageUrl = s3Util.uploadUserProfileImage(userProfileImage);
+        User user = User.builder()
+                .userEmail(createUserDto.getUserEmail())
+                .passwordHash(passwordEncoder.encode(createUserDto.getPassword()))
+                .userName(createUserDto.getUserName())
+                .userRole(UserRole.user)
+                .profileImageUrl(userProfileImageUrl)
+                .language(languageRepository.findByLanguageName(createUserDto.getLanguageName()))
+                .signupDate(LocalDate.now())
+                .build();
         return (userMapper.toUserDto(userRepository.save(user)));
     }
 
@@ -114,27 +114,26 @@ public class UserService {
      * @param userProfileImage 유저 프로필 이미지
      * @return DB에 저장 후 반환되는 유저 엔티티의 DTO 변환값
      */
+    @Transactional
     public UserDto updateUser(UpdateUserDto updateUserDto, Optional<MultipartFile> userProfileImage)
             throws IOException {
 
-        User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo());
-        //유저 비밀번호 업데이트
-        if (StringUtils.hasText(updateUserDto.getPassword())) {
-            user.setPasswordHash(passwordEncoder.encode(updateUserDto.getPassword()));
+        User user = userRepository.findByUserAccountNo(updateUserDto.getUserAccountNo())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
+        // 이미지 url 받아오기
+        String userProfileImageUrl = s3Util.uploadUserProfileImage(userProfileImage);
+        if (StringUtils.hasText(userProfileImageUrl)) {
+            s3Util.removeS3File(user.getProfileImageUrl());
         }
-        //유저 이름 업데이트
-        user.setUserName(updateUserDto.getUserName());
-        //유저 프로필 사진 업데이트
-        if (userProfileImage.isPresent() && !userProfileImage.get().isEmpty()) {
-            //기존 이미지 삭제
-            s3Service.removeS3File(user.getProfileImageUrl());
-            String userProfileImageUrl = s3Service.uploadUserProfileImage(userProfileImage.get());
-            user.setProfileImageUrl(userProfileImageUrl);
-        }
-        //유저 언어 업데이트
-        user.setLanguage(languageRepository.findByLanguageName(updateUserDto.getLanguageName()));
+        user.updateBuilder()
+                .passwordHash(updateUserDto.getPassword())
+                .userName(updateUserDto.getUserName())
+                .language(languageRepository.findByLanguageName(updateUserDto.getLanguageName()))
+                .profileImageUrl(userProfileImageUrl)
+                .build();
         return (userMapper.toUserDto(user));
     }
+
 
     /**
      * 유저를 권한을 수정한다.
@@ -142,26 +141,31 @@ public class UserService {
      * @param adminUpdateUserDto 수정하고자 하는 유저의 accountNo와 새로운 권한 값
      * @return DB에 저장된 user를 변환한 userDto
      */
+    @Transactional
     public UserDto updateUserRole(AdminUpdateUserDto adminUpdateUserDto) {
-        User user = userRepository.findByUserAccountNo(adminUpdateUserDto.getUserAccountNo());
-        if (adminUpdateUserDto.getUserRole().equals("user")) { // 상수를 사용할 것 -> 그 때의 차이에 대해 명확히 알아둘 것
-            user.setUserRole(UserRole.user);
+        User user = userRepository.findByUserAccountNo(adminUpdateUserDto.getUserAccountNo())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
+        if ("user".equals(adminUpdateUserDto.getUserRole())) {
+            user.updateUserRole(UserRole.user);
         } else {
-            user.setUserRole(UserRole.admin);
+            user.updateUserRole(UserRole.admin);
         }
-        user = userRepository.save(user);
+        userRepository.save(user);
         return (userMapper.toUserDto(user));
     }
+
 
     /**
      * 유저를 삭제한다.
      *
      * @param userAccountNo 삭제하고자 하는 유저의 accountNo
      */
+    @Transactional
     public void deleteUser(Long userAccountNo) {
-        User user = userRepository.findByUserAccountNo(userAccountNo);
+        User user = userRepository.findByUserAccountNo(userAccountNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
         if (user.getProfileImageUrl() != null) {
-            s3Service.removeS3File(user.getProfileImageUrl());
+            s3Util.removeS3File(user.getProfileImageUrl());
         }
         userRepository.deleteByUserAccountNo(userAccountNo);
     }

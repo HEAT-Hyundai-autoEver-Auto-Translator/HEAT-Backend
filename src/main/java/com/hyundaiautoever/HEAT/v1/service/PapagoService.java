@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -73,15 +75,14 @@ public class PapagoService {
 
         //Translation 레코드 찾기
         Translation fullRequestTranslation = translationRepository.findByTranslationNo(
-                translationWithoutResult.getTranslationNo());
+                        translationWithoutResult.getTranslationNo())
+                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 정보입니다."));
 
         //Translation 레코드에 결과 텍스트 저장하기
-        fullRequestTranslation.setResultText(
+        fullRequestTranslation.setTranslationResult(
                 papagoResponseDto.getMessage().getResult().getTranslatedText());
 
         return translationRepository.save(fullRequestTranslation);
     }
 
-//    public Language papagoLanguageDetection(RequestTranslationDto requestTranslationDto) {
-//    }
 }

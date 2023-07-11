@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +45,16 @@ public class OpenAIService {
         saveCompleteResultTranslation(translationWithoutResult, openAiResponseDto);
     }
 
+    @Transactional
+    public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
+                                                     OpenAIResponseDto openAIResponseDto) {
+        Translation fullRequestTranslation = translationRepository.findByTranslationNo(
+                        translationWithoutResult.getTranslationNo())
+                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 정보입니다."));
+        fullRequestTranslation.setTranslationResult(
+                openAIResponseDto.getChoices().get(0).getMessage().getContent());
+        return translationRepository.save(fullRequestTranslation);
+    }
 
     private OpenAIResponseDto getOpenAIResponseDto(RequestTranslationDto requestTranslationDto) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -69,18 +81,7 @@ public class OpenAIService {
         return openAiResponseDto;
     }
 
-    @Transactional
-    public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
-                                                     OpenAIResponseDto openAIResponseDto) {
-        Translation fullRequestTranslation = translationRepository.findByTranslationNo(
-                translationWithoutResult.getTranslationNo());
-        fullRequestTranslation.setResultText(
-                openAIResponseDto.getChoices().get(0).getMessage().getContent());
-        return translationRepository.save(fullRequestTranslation);
-    }
-
-    @Transactional
-    public String getRequestContent(RequestTranslationDto requestTranslationDto) {
+    private String getRequestContent(RequestTranslationDto requestTranslationDto) {
         String requestContent;
         String requestText = requestTranslationDto.getRequestText();
         String requestLanguageName;
