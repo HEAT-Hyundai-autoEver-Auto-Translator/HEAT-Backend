@@ -31,10 +31,10 @@ import java.util.Optional;
 @Slf4j
 public class LoginService {
 
-    //    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
-//    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
-    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(5).toMillis();
-    private final long REFRESH_TOKEN_DURATION = Duration.ofMinutes(10).toMillis();
+    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
+    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
+//    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(5).toMillis();
+//    private final long REFRESH_TOKEN_DURATION = Duration.ofMinutes(10).toMillis();
 
     private final UserRepository userRepository;
     private final LanguageRepository languageRepository;
