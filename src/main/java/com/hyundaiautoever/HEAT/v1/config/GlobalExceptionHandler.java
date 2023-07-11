@@ -5,6 +5,7 @@ import com.hyundaiautoever.HEAT.v1.exception.LanguageDetectionFailureException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
 import com.hyundaiautoever.HEAT.v1.exception.UserAlreadyExistException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<String> handlerJwtException(JwtException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
