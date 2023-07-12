@@ -12,4 +12,5 @@ public interface TranslationRepository extends JpaRepository<Translation, Long>,
     Translation save(Translation translation);
     Optional<Translation> findByTranslationNo(Long translationNo);
     List<Translation> findTranslationByUserEmail(String userId);
+    List<Translation> findByUser_UserEmail(String userEmail);
 }

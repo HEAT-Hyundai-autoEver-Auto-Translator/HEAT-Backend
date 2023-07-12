@@ -1,7 +1,9 @@
 package com.hyundaiautoever.HEAT.v1.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 import com.hyundaiautoever.HEAT.v1.util.S3Util;
@@ -13,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user", indexes = @Index(name = "idx_user_email", columnList = "user_email"))
 public class User {
@@ -40,6 +41,9 @@ public class User {
     @Column(nullable = false)
     private LocalDate signupDate;
     private LocalDate lastAccessDate;
+
+    @OneToMany(mappedBy = "user")
+    List<Translation> translationList = new ArrayList<>();
 
     @Builder
     public User(Long userAccountNo, String userEmail, String passwordHash, String userName, UserRole userRole, String profileImageUrl, String refreshToken, Language language, LocalDate signupDate, LocalDate lastAccessDate) {

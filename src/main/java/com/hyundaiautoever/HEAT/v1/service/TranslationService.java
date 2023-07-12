@@ -85,13 +85,14 @@ public class TranslationService {
     /**
      * 유저 별 번역 이력을 반환한다.
      *
-     * @param userId 유저의 id
+     * @param userEmail 유저의 email
      * @return 유저의 번역 이력 리스트
      */
     @Nullable
     @Transactional(readOnly = true)
-    public List<TranslationDto> findTranslationByUserEmail(String userId) {
-        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userId));
+    public List<TranslationDto> findTranslationByUserEmail(String userEmail) {
+//        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userEmail));
+        return translationMapper.toTranslationDtoList(translationRepository.findByUser_UserEmail(userEmail));
     }
 
 
