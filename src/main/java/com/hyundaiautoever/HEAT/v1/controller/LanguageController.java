@@ -30,14 +30,12 @@ public class LanguageController {
 
     @ApiOperation(
             value = "번역 지원 언어 목록 조회 API",
-            notes = "현재 HEAT에서 지원하는 번역 언어 리스트를 불러오는 API"
-    )
+            notes = "현재 HEAT에서 지원하는 번역 언어 리스트를 불러오는 API")
     @ApiResponses(
         value = {
             @ApiResponse(responseCode = "200",
                 description = "결과 전달",
-                content = @Content(array = @ArraySchema(schema = @Schema(implementation = LanguageDto.class))))
-            })
+                content = @Content(schema = @Schema(implementation = LanguageDto.class)))})
     @GetMapping("/language")
     ResponseEntity<?> getAvailableLanguageList() {
         List<LanguageDto> availableLanguageDtoList = languageService.getAvailableLanguageList();
