@@ -69,15 +69,14 @@ public class TranslationService {
      * @throws NullPointerException 해당 레코드에 결과값이 저장돼 있지 않을 떄
      */
     @Transactional(readOnly = true)
-    public Optional<TranslationDto> getTranslationResult(Long translationNo) {
+    public TranslationDto getTranslationResult(Long translationNo) {
 
         Translation translation = translationRepository.findByTranslationNo(translationNo)
                 .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 데이터 요청입니다."));
         if (translation.getResultText() == null) {
             throw new TranslationNotCompleteException("번역 작업이 완료되지 않았습니다.");
         }
-        Optional<TranslationDto> translationDto = Optional.ofNullable(
-                new TranslationDto(translation));
+        TranslationDto translationDto = new TranslationDto(translation);
         return translationDto;
     }
 
