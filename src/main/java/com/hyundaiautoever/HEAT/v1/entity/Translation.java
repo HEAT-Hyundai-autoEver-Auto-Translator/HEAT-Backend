@@ -6,12 +6,13 @@ import javax.ws.rs.CookieParam;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
 @Table(name = "translation", indexes = @Index(name = "idx_user_account_no", columnList = "user_account_no"))
 public class Translation {
 
@@ -37,4 +38,18 @@ public class Translation {
     private String resultText;
     @Column(nullable = false)
     private Timestamp createDatetime;
+
+    @Builder
+    public Translation(Long translationNo, User user, Language requestLanguage, Language resultLanguage, String requestText, String resultText, Timestamp createDatetime) {
+        this.user = user;
+        this.requestLanguage = requestLanguage;
+        this.resultLanguage = resultLanguage;
+        this.requestText = requestText;
+        this.resultText = resultText;
+        this.createDatetime = createDatetime;
+    }
+
+    public void setTranslationResult(String resultText) {
+        this.resultText = resultText;
+    }
 }

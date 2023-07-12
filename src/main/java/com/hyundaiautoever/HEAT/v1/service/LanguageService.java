@@ -4,7 +4,6 @@ import com.hyundaiautoever.HEAT.v1.dto.language.LanguageDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
-import com.hyundaiautoever.HEAT.v1.exception.LanguageDetectionFailureException;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 
 import java.util.*;
@@ -24,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
+    private final LanguageDetector detector = new OptimaizeLangDetector().loadModels();
+
     private static final Map<LanguageCodePair, Boolean> languageSupportMap = new HashMap<>();
 
     @Getter
@@ -74,7 +75,7 @@ public class LanguageService {
      *
      * @throws Exception 처리예정
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LanguageDto> getAvailableLanguageList() {
         List<Language> languageList = languageRepository.findAll();
         List<LanguageDto> languageDtoList = new ArrayList<>();
@@ -84,23 +85,27 @@ public class LanguageService {
         return languageDtoList;
     }
 
+    @Transactional(readOnly = true)
+    public Language detectLanguageType(RequestTranslationDto requestTranslationDto) {
+        LanguageResult result = detector.detect(requestTranslationDto.getRequestText());
+        String resultLanguageCode = result.getLanguage();
+        //영국 영어 코드 "br" 예외 처리
+        if ("br".equals(resultLanguageCode)) {
+            resultLanguageCode = "en";
+        }
+        // 임시 코드
+        Language language = languageRepository.findByLanguageCode(resultLanguageCode);
+        if (language == null) {
+            language = languageRepository.findByLanguageNo(2);
+        }
+        return language;
+    }
+
     public static boolean isPapagoSupported(Translation translation) {
         if (translation.getRequestLanguage() == null) {
-            throw new LanguageDetectionFailureException("언어 감지에 실패했습니다.");
+            throw new RuntimeException("언어 감지에 실패했습니다.");
         }
         return languageSupportMap.getOrDefault(new LanguageCodePair(translation.getRequestLanguage().getLanguageCode(),
                 translation.getResultLanguage().getLanguageCode()), false);
-    }
-
-    @Transactional
-    public Language detectLanguageType(RequestTranslationDto requestTranslationDto) {
-        LanguageDetector detector = new OptimaizeLangDetector().loadModels();
-        LanguageResult result = detector.detect(requestTranslationDto.getRequestText());
-        String resultLanguageCode = result.getLanguage();
-        if (resultLanguageCode.equals("br")) {
-            resultLanguageCode = "en";
-        }
-        log.info(result.getLanguage());
-        return languageRepository.findByLanguageCode(result.getLanguage());
     }
 }

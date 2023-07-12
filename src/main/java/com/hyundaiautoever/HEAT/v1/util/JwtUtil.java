@@ -1,6 +1,5 @@
 package com.hyundaiautoever.HEAT.v1.util;
 
-import com.hyundaiautoever.HEAT.v1.dto.user.LoginResponseDto;
 import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 import io.jsonwebtoken.Header;
@@ -9,15 +8,15 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.Duration;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -25,14 +24,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class JwtUtils {
+public class JwtUtil {
 
-    //    @Value("${spring.jwt.secret}")
-    private String JWT_SECRET = "12345678901234567890121234567890123456789012!";
+    @Value("${spring.jwt.secret}")
+    private String JWT_SECRET;
     private final String JWT_ISSUER = "HEAT";
 
     private final UserRepository userRepository;
-
 
 
     public String makeJwToken(User user, long duration) {
@@ -52,6 +50,7 @@ public class JwtUtils {
         return jwToken;
     }
 
+
     public User validateRefreshToken(String refreshToken) {
         User user;
         Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
@@ -62,11 +61,11 @@ public class JwtUtils {
                     .requireIssuer(JWT_ISSUER)
                     .build()
                     .parse(refreshToken);
-            log.info(jwt.getBody().toString());
             Map<String, Object> claims = (Map<String, Object>) jwt.getBody();
             Long userAccountNo = Long.parseLong(claims.get("userAccountNo").toString());
-            user = userRepository.findByUserAccountNo(userAccountNo);
-            if (!refreshToken.equals(user.getRefreshToken())) {
+            user = userRepository.findByUserAccountNo(userAccountNo)
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
+            if (!StringUtils.hasText(refreshToken) && !refreshToken.equals(user.getRefreshToken())) {
                 throw new JwtException("저장된 토큰과 불일치합니다.");
             }
         } catch(JwtException e){
@@ -75,6 +74,7 @@ public class JwtUtils {
         }
         return user;
     }
+
 
     public User validateAccessToken (String accessToken) {
         Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
@@ -86,10 +86,10 @@ public class JwtUtils {
                     .requireIssuer(JWT_ISSUER)
                     .build()
                     .parse(accessToken);
-            log.info(jwt.getBody().toString());
             Map<String, Object> claims = (Map<String, Object>) jwt.getBody();
             Long userAccountNo = Long.parseLong(claims.get("userAccountNo").toString());
-            user = userRepository.findByUserAccountNo(userAccountNo);
+            user = userRepository.findByUserAccountNo(userAccountNo)
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다."));
         } catch(JwtException e){
             e.printStackTrace();
             return  null;

@@ -1,10 +1,10 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
+import com.hyundaiautoever.HEAT.v1.Exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
-import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
-import com.hyundaiautoever.HEAT.v1.exception.TranslationNotFoundException;
+import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.translation.TranslationRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
@@ -22,10 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
+import javax.persistence.EntityNotFoundException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class TranslationService {
 
@@ -66,19 +66,17 @@ public class TranslationService {
      *
      * @param translationNo 번역 테이블 기본키 값
      * @return 해당 번역 요청의 결과를 포함한 TranslationDto
-     * @throws TranslationNotCompleteException 해당 레코드에 결과값이 저장돼 있지 않을 떄
+     * @throws NullPointerException 해당 레코드에 결과값이 저장돼 있지 않을 떄
      */
-    public Optional<TranslationDto> getTranslationResult(Long translationNo) {
+    @Transactional(readOnly = true)
+    public TranslationDto getTranslationResult(Long translationNo) {
 
-        Translation translation = translationRepository.findByTranslationNo(translationNo);
-        if (translation == null) {
-            throw new TranslationNotFoundException("잘못된 번역 데이터 요청입니다.");
-        }
+        Translation translation = translationRepository.findByTranslationNo(translationNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 데이터 요청입니다."));
         if (translation.getResultText() == null) {
             throw new TranslationNotCompleteException("번역 작업이 완료되지 않았습니다.");
         }
-        Optional<TranslationDto> translationDto = Optional.ofNullable(
-                new TranslationDto(translation));
+        TranslationDto translationDto = new TranslationDto(translation);
         return translationDto;
     }
 
@@ -86,12 +84,14 @@ public class TranslationService {
     /**
      * 유저 별 번역 이력을 반환한다.
      *
-     * @param userId 유저의 id
+     * @param userEmail 유저의 email
      * @return 유저의 번역 이력 리스트
      */
     @Nullable
-    public List<TranslationDto> findTranslationByUserEmail(String userId) {
-        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userId));
+    @Transactional(readOnly = true)
+    public List<TranslationDto> findTranslationByUserEmail(String userEmail) {
+//        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userEmail));
+        return translationMapper.toTranslationDtoList(translationRepository.findByUser_UserEmail(userEmail));
     }
 
 
@@ -101,31 +101,33 @@ public class TranslationService {
      * @return 기존까지의 모든 번역 이력 리스트
      **/
     @Nullable
+    @Transactional(readOnly = true)
     public List<TranslationDto> findAllTranslation() {
         return translationMapper.toTranslationDtoList(translationRepository.findAll());
     }
 
+
+    /**
+     * 특정 인덱스의 번역 이력을 삭제한다.
+     **/
+    @Transactional
     public void deleteTranslation(Long translationNo) {
         translationRepository.deleteById(translationNo);
     }
 
+
+    @Transactional
     public Translation saveTranslationWithoutResult(RequestTranslationDto requestTranslationDto) {
 
-        Translation emptyRequstTranslation = new Translation();
-        //User 세팅
-        emptyRequstTranslation.setUser(
-                userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo()));
-        //requestLanguage 세팅
-        emptyRequstTranslation.setRequestLanguage(
-                languageService.detectLanguageType(requestTranslationDto));
-        //ResultLanguage No 세팅
-        emptyRequstTranslation.setResultLanguage(
-                languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()));
-        //CreateDatetime 세팅
-        emptyRequstTranslation.setCreateDatetime(new Timestamp(System.currentTimeMillis()));
-        //RequestText 세팅
-        emptyRequstTranslation.setRequestText(requestTranslationDto.getRequestText());
-
+        Timestamp createDateTime = new Timestamp(System.currentTimeMillis());
+        Translation emptyRequstTranslation = Translation.builder()
+                .user(userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo())
+                        .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다.")))
+                .requestLanguage(languageService.detectLanguageType(requestTranslationDto))
+                .resultLanguage(languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()))
+                .createDatetime(createDateTime)
+                .requestText(requestTranslationDto.getRequestText())
+                .build();
         return translationRepository.save(emptyRequstTranslation);
     }
 }

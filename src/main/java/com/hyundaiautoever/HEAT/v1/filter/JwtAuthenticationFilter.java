@@ -1,7 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.filter;
 
-import com.hyundaiautoever.HEAT.v1.service.LoginService;
-import com.hyundaiautoever.HEAT.v1.util.JwtUtils;
+import com.hyundaiautoever.HEAT.v1.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,14 +23,14 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtils jwtUtils;
+    private final JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String accessToken = parseAccessToken(request);
         if (accessToken != null) {
-            com.hyundaiautoever.HEAT.v1.entity.User userEntity = jwtUtils.validateAccessToken(accessToken);
+            com.hyundaiautoever.HEAT.v1.entity.User userEntity = jwtUtil.validateAccessToken(accessToken);
             if (userEntity != null) {
                 Authentication authentication = getAuthentication(accessToken, userEntity);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -50,12 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String parseAccessToken(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization");
-        log.error(accessToken);
         if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")) {
             return accessToken.substring(7, accessToken.length());
         }
         return null;
     }
-
-
 }
