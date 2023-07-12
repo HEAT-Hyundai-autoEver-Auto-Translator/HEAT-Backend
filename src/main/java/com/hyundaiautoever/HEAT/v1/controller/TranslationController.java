@@ -29,7 +29,8 @@ public class TranslationController {
     public ResponseEntity<?> requestTranslation(@RequestBody @Valid RequestTranslationDto requestTranslationDto) // Dto 네이밍
     {
         Long translationNo = translationService.requestTranslation(requestTranslationDto);
-        return new ResponseEntity<>(translationNo, HttpStatus.ACCEPTED);
+//        return new ResponseEntity<>(translationNo, HttpStatus.ACCEPTED);
+        return ResponseEntity.ok(translationNo);
     }
 
     @GetMapping("/translation/translation-no") // requestVariable
