@@ -42,7 +42,7 @@ public class User {
     private LocalDate signupDate;
     private LocalDate lastAccessDate;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     List<Translation> translationList = new ArrayList<>();
 
     @Builder
