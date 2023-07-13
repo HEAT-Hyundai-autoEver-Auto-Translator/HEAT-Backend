@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                     .antMatchers(AUTH_LIST).permitAll()
                     .antMatchers(HttpMethod.POST, "/api/user").permitAll()
-                    .antMatchers("/api/user/login", "/api/user/login/google", "/api/user/refresh-token","/swagger-ui", "/swagger-ui/*").permitAll()
+                    .antMatchers("/api/user/login", "/api/user/login/google", "/api/user/refresh-token", "/api/language","/swagger-ui", "/swagger-ui/*").permitAll()
                     .antMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             .and()
