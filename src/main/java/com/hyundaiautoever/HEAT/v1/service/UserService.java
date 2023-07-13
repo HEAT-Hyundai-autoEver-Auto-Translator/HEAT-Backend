@@ -12,6 +12,7 @@ import com.hyundaiautoever.HEAT.v1.util.UserMapper;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -90,6 +91,7 @@ public class UserService {
     public UserDto createUser(CreateUserDto createUserDto, Optional<MultipartFile> userProfileImage)
             throws IOException {
 
+        LocalDate now = LocalDate.now();
         if (userRepository.findByUserEmail(createUserDto.getUserEmail()).isPresent()) {
             throw new EntityExistsException("이미 존재하는 계정입니다.");
         }
@@ -101,7 +103,7 @@ public class UserService {
                 .userRole(UserRole.user)
                 .profileImageUrl(userProfileImageUrl)
                 .language(languageRepository.findByLanguageName(createUserDto.getLanguageName()))
-                .signupDate(LocalDate.now())
+                .signupDate(now)
                 .build();
         return (userMapper.toUserDto(userRepository.save(user)));
     }
@@ -126,7 +128,7 @@ public class UserService {
             s3Util.removeS3File(user.getProfileImageUrl());
         }
         user.updateBuilder()
-                .passwordHash(updateUserDto.getPassword())
+                .passwordHash(passwordEncoder.encode(updateUserDto.getPassword()))
                 .userName(updateUserDto.getUserName())
                 .language(languageRepository.findByLanguageName(updateUserDto.getLanguageName()))
                 .profileImageUrl(userProfileImageUrl)
