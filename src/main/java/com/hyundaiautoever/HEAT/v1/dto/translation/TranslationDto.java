@@ -6,9 +6,12 @@ import java.sql.Timestamp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@EqualsAndHashCode
 @Schema
 public class TranslationDto {
 

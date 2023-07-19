@@ -34,7 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEntity != null) {
                 Authentication authentication = getAuthentication(accessToken, userEntity);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             }
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token provided");
         }
         filterChain.doFilter(request, response);
     }

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.12'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'jacoco'
 }
 
 group = 'com.hyundai-autoever'
@@ -79,6 +80,9 @@ dependencies {
 
 	//Mockito 설정
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.3.1'
+
+	//Jacoco 설정
+	testImplementation group: 'org.jacoco', name: 'org.jacoco.agent', version: '0.8.8'
 }
 
 tasks.named('test') {
@@ -100,4 +104,68 @@ sourceSets {
 // gradle clean 시에 QClass 디렉토리 삭제
 clean {
 	delete file(generated)
+}
+
+//Jacoco 설정
+test {
+	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
+}
+
+jacoco {
+	toolVersion = '0.8.8'
+}
+
+jacocoTestReport {
+	reports {
+		html.enabled true
+		xml.enabled false
+		csv.enabled false
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					"**/com/hyundaiautoever/HEAT/v1/config",
+					"**/com/hyundaiautoever/HEAT/v1/dto",
+					"**/com/hyundaiautoever/HEAT/v1/entity",
+					"**/com/hyundaiautoever/HEAT/v1/exception",
+					"**/com/hyundaiautoever/HEAT/v1/filter",
+					"**/com/hyundaiautoever/HEAT/v1/util",
+					"**/com/hyundaiautoever/HEAT/v1/repository",
+					"**/com/hyundaiautoever/HEAT/v1/service/OpenAI*",
+					"**/com/hyundaiautoever/HEAT/v1/service/Papago*"
+			])
+		}))
+	}
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true // 활성화
+			element = 'CLASS' // 클래스 단위로 커버리지 체크
+
+			// 라인 커버리지 제한을 80%로 설정
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.00
+			}
+
+			// 브랜치 커버리지 제한을 80%로 설정
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.00
+			}
+
+//			excludes = ['**/com/hyundaiautoever/HEAT/v1/config',
+//						'**/com/hyundaiautoever/HEAT/v1/dto',
+//						'**/com/hyundaiautoever/HEAT/v1/entity',
+//						'**/com/hyundaiautoever/HEAT/v1/exception',
+//						'**/com/hyundaiautoever/HEAT/v1/filter']
+		}
+
+	}
 }

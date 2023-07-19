@@ -44,7 +44,7 @@ public class PapagoService {
         saveCompleteResultTranslation(translationWithoutResult, papagoResponseDto);
     }
 
-    private PapagoResponseDto getPapagoResponseDto(RequestTranslationDto requestTranslationDto) {
+    public PapagoResponseDto getPapagoResponseDto(RequestTranslationDto requestTranslationDto) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         String requestLanguageCode = languageService.detectLanguageType(requestTranslationDto).getLanguageCode();

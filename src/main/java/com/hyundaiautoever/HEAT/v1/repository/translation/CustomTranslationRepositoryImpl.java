@@ -21,9 +21,14 @@ public class CustomTranslationRepositoryImpl implements CustomTranslationReposit
         QTranslation translation = QTranslation.translation;
 
         // QueryDSL 쿼리 작성
+//        List<Translation> userTranslationList = queryFactory
+//                .selectFrom(translation)
+//                .join(translation.user)
+//                .where(translation.user.userEmail.eq(userEmail))
+//                .fetch();
         List<Translation> userTranslationList = queryFactory
                 .selectFrom(translation)
-                .join(translation.user)
+                .join(translation.user).fetchJoin()
                 .where(translation.user.userEmail.eq(userEmail))
                 .fetch();
 

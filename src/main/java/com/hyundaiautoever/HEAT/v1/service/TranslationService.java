@@ -1,17 +1,15 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
-import com.hyundaiautoever.HEAT.v1.Exception.TranslationNotCompleteException;
+import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
 import com.hyundaiautoever.HEAT.v1.entity.Translation;
-import com.hyundaiautoever.HEAT.v1.entity.User;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import com.hyundaiautoever.HEAT.v1.repository.translation.TranslationRepository;
 import com.hyundaiautoever.HEAT.v1.repository.user.UserRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import com.hyundaiautoever.HEAT.v1.util.TranslationMapper;
 import lombok.RequiredArgsConstructor;
@@ -90,8 +88,8 @@ public class TranslationService {
     @Nullable
     @Transactional(readOnly = true)
     public List<TranslationDto> findTranslationByUserEmail(String userEmail) {
-//        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userEmail));
-        return translationMapper.toTranslationDtoList(translationRepository.findByUser_UserEmail(userEmail));
+        return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userEmail));
+//        return translationMapper.toTranslationDtoList(translationRepository.findByUser_UserEmail(userEmail));
     }
 
 
