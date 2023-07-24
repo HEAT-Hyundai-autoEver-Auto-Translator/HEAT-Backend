@@ -8,11 +8,9 @@ env:
   CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
   
 on:
-#   pull_request:
-   push:
+   pull_request:
     branches:
-#      - 'main'
-      - 'HEAT-61'
+      - 'main'
 
 jobs:
   Explore-GitHub-Actions:
