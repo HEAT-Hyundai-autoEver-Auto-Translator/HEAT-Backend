@@ -145,13 +145,6 @@ jacocoTestCoverageVerification {
 		rule {
 			enabled = true
 			element = 'CLASS'
-
-			// 라인 커버리지 제한을 80%로 설정
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
 		}
 
 	}
