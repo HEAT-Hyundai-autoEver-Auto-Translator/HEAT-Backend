@@ -6,6 +6,7 @@ import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.repository.LanguageRepository;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,6 +45,7 @@ class LanguageServiceTest {
         language2.setLanguageCode("en");
     }
 
+    @DisplayName("getAvailableLanguageList 메소드 테스트")
     @Test
     public void testGetAvailableLanguageList() {
         //Arrange
@@ -57,6 +59,7 @@ class LanguageServiceTest {
         assertEquals(2, result.size());
     }
 
+    @DisplayName("detectLanguageType 메소드 테스트")
     @Test
     public void testDetectLanguageType() {
         //Arrange

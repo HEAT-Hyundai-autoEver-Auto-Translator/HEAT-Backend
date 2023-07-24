@@ -12,6 +12,7 @@ import com.hyundaiautoever.HEAT.v1.util.JwtUtil;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,6 +65,7 @@ class LoginServiceTest {
                 .build();
     }
 
+    @DisplayName("login 메소드 테스트")
     @Test
     void testLogin() throws AuthenticationException {
         // Arrange
@@ -77,6 +79,7 @@ class LoginServiceTest {
         verify(userRepository, times(1)).findByUserEmail(loginDto1.getUserEmail());
     }
 
+    @DisplayName("googleLogin 메소드 테스트")
     @Test
     void testGoogleLogin() throws IOException {
         // Arrange
@@ -97,6 +100,7 @@ class LoginServiceTest {
         assertNotNull(result);
     }
 
+    @DisplayName("getAccessTokenWithRefreshToken 메소드 테스트")
     @Test
     void testGetAccessTokenWithRefreshToken() {
         //Arrange

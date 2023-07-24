@@ -8,6 +8,7 @@ import com.hyundaiautoever.HEAT.v1.service.LoginService;
 import com.hyundaiautoever.HEAT.v1.service.UserService;
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -96,6 +97,7 @@ public class UserControllerTest {
                 .build();
     }
 
+    @DisplayName("login 메소드 테스트")
     @Test
     public void testLogin() throws Exception {
         // Arrange
@@ -108,8 +110,9 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("googleLogin 메소드 테스트")
     @Test
-    public void googleLoginTest() throws Exception {
+    public void testGoogleLogin() throws Exception {
         //Arrange
         HashMap<String, String> accessToken = new HashMap<>();
         accessToken.put("accessToken", "test");
@@ -124,6 +127,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("verifyRefreeshToken 메소드 테스트")
     @Test
     public void testVerifyRefreshToken() throws Exception {
         // Arrange
@@ -139,6 +143,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("getUserList 메소드 테스트")
     @Test
     public void testGetUserList() throws Exception {
         // Arrange
@@ -150,6 +155,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @DisplayName("getUserInformation 메소드 테스트")
     @Test
     public void testGetUserInformation() throws Exception {
         // Arrange
@@ -163,6 +169,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @DisplayName("searchUserByUserName 메소드 테스트")
     @Test
     public void testSearchUserByUserName() throws Exception {
         //Assert
@@ -177,21 +184,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-//    @Test
-//    public void testCreateUser() throws Exception {
-//        //Arrange
-//        UserDto userDto = new UserDto(user); // fill this with a valid UserDto
-//        MockMultipartFile createUserDtoFile = new MockMultipartFile("createUserDto", "", "application/json", "createUserDtoString".getBytes());
-//        MockMultipartFile userProfileImage = new MockMultipartFile("userProfileImage", "test.jpg", "image/jpeg", "test image content".getBytes());
-//        when(userService.createUser(any(), any())).thenReturn(userDto);
-//        //Act and Assert
-//        mockMvc.perform(multipart("/api/user")
-//                        .file(createUserDtoFile)
-//                        .file(userProfileImage)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA))
-//                .andExpect(MockMvcResultMatchers.status().isOk());
-//    }
-
+    @DisplayName("deleteUser 메소드 테스트")
     @Test
     public void testDeleteUser() throws Exception {
         //Arrange
@@ -205,6 +198,7 @@ public class UserControllerTest {
         verify(userService, times(1)).deleteUser(userAccountNo);
     }
 
+    @DisplayName("updateUser 메소드 테스트")
     @Test
     public void testUpdateUser() throws Exception {
         // Arrange

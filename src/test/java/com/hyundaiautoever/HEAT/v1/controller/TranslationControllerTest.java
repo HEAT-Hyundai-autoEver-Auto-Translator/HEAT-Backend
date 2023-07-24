@@ -10,6 +10,7 @@ import com.hyundaiautoever.HEAT.v1.service.TranslationService;
 
 import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -74,46 +75,52 @@ class TranslationControllerTest {
         requestTranslationDto.setUserAccountNo(1L);
     }
 
-    // requestTranslation 테스트 코드
+    @DisplayName("requestTranslation 메소드 테스트")
     @Test
     public void testRequestTranslation() throws Exception {
-
+        //Act and Assert
         mockMvc.perform(post("/api/translation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestTranslationDto)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // getTranslationResult 테스트 코드
+    @DisplayName("getTranslationResult 메소드 테스트")
     @Test
     public void testGetTranslationResult() throws Exception {
+        //Arrange
         Long translationNo = 1L;
+        //Act and Assert
         mockMvc.perform(get("/api/translation/translation-no")
                         .param("translation-no", translationNo.toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // findTranslationByUserEmail 테스트 코드
+    @DisplayName("findTranslationByUserEmail 메소드 테스트")
     @Test
     public void testFindTranslationByUserEmail() throws Exception {
+        //Arrange
         String userEmail = "test@user.com";
+        //Act and Assert
         mockMvc.perform(get("/api/translation/user-email")
                         .param("user-email", userEmail))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // findAllTranslation 테스트 코드
+    @DisplayName("findAllTranslation 메소드 테스트")
     @Test
     public void testFindAllTranslation() throws Exception {
+        //Act and Assert
         mockMvc.perform(get("/api/translation/history"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // deleteTranslationRecord 테스트 코드
+    @DisplayName("deleteTranslationRecord 메소드 테스트")
     @Test
     public void testDeleteTranslationRecord() throws Exception {
+        //Arrange
         Long translationNo = 1L;
-
+        //Act and Assert
         mockMvc.perform(delete("/api/translation/translation-no")
                         .param("translation-no", translationNo.toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk());

@@ -97,10 +97,9 @@ class TranslationServiceTest {
 
     @DisplayName("requestTranslation 메소드 테스트")
     @Test
-    void requestTranslationTestPapago() {
+    void testRequestTranslationPapago() {
         try (MockedStatic<LanguageService> mocked = Mockito.mockStatic(LanguageService.class)) {
             mocked.when(() -> LanguageService.isPapagoSupported(any())).thenReturn(true);
-            // 이 안에서는 isPapagoSupported가 true를 반환합니다.
             // Arrange
             Timestamp createDateTime = new Timestamp(System.currentTimeMillis());
             Translation translationWithoutResult = Translation.builder()
@@ -111,7 +110,6 @@ class TranslationServiceTest {
                     .user(user1)
                     .build();
 
-//        when(translationService.saveTranslationWithoutResult(requestTranslationDto)).thenReturn(translationWithoutResult);
             when(userRepository.findByUserAccountNo(1L)).thenReturn(Optional.of(user1));
             when(languageRepository.findByLanguageName(anyString())).thenReturn(requestLanguage);
             when(translationRepository.save(any())).thenReturn(translationWithoutResult);
@@ -126,10 +124,9 @@ class TranslationServiceTest {
 
     @DisplayName("requestTranslation 메소드 테스트")
     @Test
-    void requestTranslationTestOpenAI() {
+    void testRequestTranslationTestOpenAI() {
         try (MockedStatic<LanguageService> mocked = Mockito.mockStatic(LanguageService.class)) {
             mocked.when(() -> LanguageService.isPapagoSupported(any())).thenReturn(false);
-            // 이 안에서는 isPapagoSupported가 true를 반환합니다.
             // Arrange
             Timestamp createDateTime = new Timestamp(System.currentTimeMillis());
             Translation translationWithoutResult = Translation.builder()
@@ -140,7 +137,6 @@ class TranslationServiceTest {
                     .user(user1)
                     .build();
 
-//        when(translationService.saveTranslationWithoutResult(requestTranslationDto)).thenReturn(translationWithoutResult);
             when(userRepository.findByUserAccountNo(1L)).thenReturn(Optional.of(user1));
             when(languageRepository.findByLanguageName(anyString())).thenReturn(requestLanguage);
             when(translationRepository.save(any())).thenReturn(translationWithoutResult);
@@ -153,8 +149,9 @@ class TranslationServiceTest {
         }
     }
 
+    @DisplayName("getTranslationResult 메소드 테스트")
     @Test
-    void getTranslationResultTest() {
+    void testGetTranslationResult() {
         //Arrange
         when(translationRepository.findByTranslationNo(1L)).thenReturn(Optional.of(translation));
         TranslationDto translationDto = new TranslationDto(translation);

@@ -5,6 +5,7 @@ import com.hyundaiautoever.HEAT.v1.dto.language.LanguageDto;
 import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,14 +44,15 @@ public class LanguageControllerTest {
         language.setLanguageName("English");
     }
 
+    @DisplayName("getAvailableLanguageList 메소드 테스트")
     @Test
-    public void getAvailableLanguageListTest() throws Exception {
+    public void testGetAvailableLanguageList() throws Exception {
+        //Arrange
         LanguageDto languageDto = new LanguageDto(language);
-
         List<LanguageDto> languageDtoList = Arrays.asList(languageDto);
-
         when(languageService.getAvailableLanguageList()).thenReturn(languageDtoList);
 
+        //Act and Assert
         mockMvc.perform(get("/api/language")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

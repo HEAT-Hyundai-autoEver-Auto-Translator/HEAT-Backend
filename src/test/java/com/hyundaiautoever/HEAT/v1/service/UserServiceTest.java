@@ -14,6 +14,7 @@ import com.hyundaiautoever.HEAT.v1.util.UserRole;
 import org.apache.commons.codec.language.bm.Lang;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -120,6 +121,7 @@ class UserServiceTest {
         userProfileImage = Optional.of(new MockMultipartFile("userProfileImage", new byte[0]));
     }
 
+    @DisplayName("findAllUser 메소드 테스트")
     @Test
     void testFindAllUser() {
         // Arrange
@@ -139,6 +141,7 @@ class UserServiceTest {
         assertThat(result).contains(userDto1, userDto2);
     }
 
+    @DisplayName("findUserInformation 메소드 테스트")
     @Test
     void testFindUserInformation() {
         //Arrange
@@ -152,6 +155,7 @@ class UserServiceTest {
         assertThat(result).isEqualTo(userDto1);
     }
 
+    @DisplayName("searchUserByUserName 메소드 테스트")
     @Test
     void testSearchUserByUserName() {
         //Arrange
@@ -171,6 +175,7 @@ class UserServiceTest {
         assertThat(result).isEqualTo(userDtoList);
     }
 
+    @DisplayName("createUser 메소드 테스트")
     @Test
     void testCreateUser() throws IOException {
         //Arrange
@@ -204,6 +209,7 @@ class UserServiceTest {
         assertThat(result).isEqualTo(userDto);
     }
 
+    @DisplayName("updateUser 메소드 테스트")
     @Test
     void updateUserTest() throws IOException {
         //Arrange
@@ -235,6 +241,7 @@ class UserServiceTest {
         assertThat(result).isEqualTo(userDto);
     }
 
+    @DisplayName("updateUserRole 메소드 테스트")
     @Test
     void testUpdateUserRole() {
         //Arrange
@@ -249,12 +256,15 @@ class UserServiceTest {
         assertThat(result).isEqualTo(userDto);
     }
 
+    @DisplayName("deleteUSer 메소드 테스트")
     @Test
     void deleteUserTest() {
         //Arrange
         when(userRepository.findByUserAccountNo(1L)).thenReturn(Optional.of(user1));
+
         //Act
         userService.deleteUser(1L);
+
         //Assert
         verify(s3Util, times(1)).removeS3File(user1.getProfileImageUrl());
         verify(userRepository, times(1)).deleteByUserAccountNo(1L);
