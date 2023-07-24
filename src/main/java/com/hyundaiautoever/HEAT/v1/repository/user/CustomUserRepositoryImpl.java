@@ -15,6 +15,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
 
     private final JPAQueryFactory queryFactory;
 
+    //유저 이름 자동완성 검색 쿼리
     @Transactional(readOnly = true)
     public List<User> findUserByUserName(String userName) {
 

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.persistence.EntityNotFoundException;
+import javax.security.sasl.AuthenticationException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,29 +34,28 @@ public class OpenAIService {
     private static final String OPEN_AI_MODEL = "gpt-3.5-turbo";
     private static final String OPEN_AI_ROLE = "user";
     private static final String REQUEST_MESSAGE = "Translate this text into ";
-    private final LanguageRepository languageRepository;
     private final TranslationRepository translationRepository;
 
+    /**
+     * 번역 요청 정보를 기반으로 OpenAI에 번역 결과를 비동기 방식으로 요청하고 결과를 DB에 저장한다.
+     *
+     * @param translationWithoutResult
+     **/
     @Async
     public void getOpenAIResponseAndSave(Translation translationWithoutResult,
                                          RequestTranslationDto requestTranslationDto) {
         // openAI API 번역 요청 및 결과 반환
         OpenAIResponseDto openAiResponseDto = getOpenAIResponseDto(requestTranslationDto);
-        // openAi 결과 수령후 DB에 저장
+        // openAi 결과 수신 후 DB에 저장
         saveCompleteResultTranslation(translationWithoutResult, openAiResponseDto);
     }
 
-    @Transactional
-    public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
-                                                     OpenAIResponseDto openAIResponseDto) {
-        Translation fullRequestTranslation = translationRepository.findByTranslationNo(
-                        translationWithoutResult.getTranslationNo())
-                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 정보입니다."));
-        fullRequestTranslation.setTranslationResult(
-                openAIResponseDto.getChoices().get(0).getMessage().getContent());
-        return translationRepository.save(fullRequestTranslation);
-    }
-
+    /**
+     * 번역 요청 정보를 기반으로 OpenAI에 해당 요청을 전송한다.
+     *
+     * @param requestTranslationDto
+     * @return openAIResponseDto OpenAI의 번역 결과를 Dto 객체로 변환한 결과 값
+     **/
     private OpenAIResponseDto getOpenAIResponseDto(RequestTranslationDto requestTranslationDto) {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,6 +81,32 @@ public class OpenAIService {
         return openAiResponseDto;
     }
 
+    /**
+     * 번역 결과를 DB에 저장한다.
+     *
+     * @param translationWithoutResult,openAiResponseDto
+     * @return 저장된 translation 객체
+     * @throws EntityNotFoundException translationWithoutResult 가 잘못된 정보일 경우
+     **/
+    @Transactional
+    public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
+                                                     OpenAIResponseDto openAIResponseDto) {
+        // Translation 인덱스로
+        Translation fullRequestTranslation = translationRepository.findByTranslationNo(
+                        translationWithoutResult.getTranslationNo())
+                .orElseThrow(() -> new EntityNotFoundException("존재 하지 않는 번역 정보입니다."));
+        fullRequestTranslation.setTranslationResult(
+                openAIResponseDto.getChoices().get(0).getMessage().getContent());
+        return translationRepository.save(fullRequestTranslation);
+    }
+
+    /**
+     * OpenAI에 요청할 content 양식을 지정한다.
+     * form = REQUEST_MESSAGE + 격과 언어 : 요청 텍스트
+     *
+     * @param requestTranslationDto
+     * @return API 요청을 위한 content
+     **/
     private String getRequestContent(RequestTranslationDto requestTranslationDto) {
         String requestContent;
         String requestText = requestTranslationDto.getRequestText();

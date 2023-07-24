@@ -50,7 +50,6 @@ public class UserService {
         return userMapper.toUserDtoList(userRepository.findAll());
     }
 
-
     /**
      * 유저의 정보를 반환한다.
      *
@@ -65,7 +64,6 @@ public class UserService {
         return userMapper.toUserDto(user);
     }
 
-
     /**
      * 입력되는 글자가 포함된 유저 리스트를 반환한다.
      *
@@ -78,7 +76,6 @@ public class UserService {
         List<User> userList = userRepository.findUserByUserName(userName);
         return userMapper.toUserDtoList(userList);
     }
-
 
     /**
      * 새 유저를 생성한다.
@@ -108,7 +105,6 @@ public class UserService {
         return (userMapper.toUserDto(userRepository.save(user)));
     }
 
-
     /**
      * 유저 정보를 업데이트 한다.
      *
@@ -136,7 +132,6 @@ public class UserService {
         return (userMapper.toUserDto(user));
     }
 
-
     /**
      * 유저를 권한을 수정한다.
      *
@@ -155,7 +150,6 @@ public class UserService {
         userRepository.save(user);
         return (userMapper.toUserDto(user));
     }
-
 
     /**
      * 유저를 삭제한다.

@@ -71,10 +71,10 @@ public class LanguageService {
     }
 
     /**
-     * 현재 번역 가능한 모든 언어들을 반환한다.
+     * 현재 서비스에서 지원하는 언어 정보를 반환한다.
      *
-     * @throws Exception 처리예정
-     */
+     * @return 지원하는 언어 리스트
+     **/
     @Transactional(readOnly = true)
     public List<LanguageDto> getAvailableLanguageList() {
         List<Language> languageList = languageRepository.findAll();
@@ -85,6 +85,12 @@ public class LanguageService {
         return languageDtoList;
     }
 
+    /**
+     * 텍스트를 기반으로 언어의 종류를 감지한다.
+     *
+     * @param requestTranslationDto : 번역 요청 dto
+     * @return 감지한 언어 기반 Language 객체
+     **/
     @Transactional(readOnly = true)
     public Language detectLanguageType(RequestTranslationDto requestTranslationDto) {
         LanguageResult result = detector.detect(requestTranslationDto.getRequestText());
@@ -93,14 +99,16 @@ public class LanguageService {
         if ("br".equals(resultLanguageCode)) {
             resultLanguageCode = "en";
         }
-        // 임시 코드
         Language language = languageRepository.findByLanguageCode(resultLanguageCode);
-        if (language == null) {
-            language = languageRepository.findByLanguageNo(2);
-        }
         return language;
     }
 
+    /**
+     * 요청언어 및 결광언어의 조합을 바탕으로 파파고 사용 가능 여부를 판단한다.
+     *
+     * @param translation
+     * @return true : 파파고 지원 가능 / false : 파파고 지원 불가능
+     **/
     public static boolean isPapagoSupported(Translation translation) {
         if (translation.getRequestLanguage() == null) {
             throw new RuntimeException("언어 감지에 실패했습니다.");

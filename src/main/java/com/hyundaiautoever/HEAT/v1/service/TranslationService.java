@@ -58,7 +58,6 @@ public class TranslationService {
         return translationWithoutResult.getTranslationNo();
     }
 
-
     /**
      * 번역요청 결과를 반환한다.
      *
@@ -78,7 +77,6 @@ public class TranslationService {
         return translationDto;
     }
 
-
     /**
      * 유저 별 번역 이력을 반환한다.
      *
@@ -89,9 +87,7 @@ public class TranslationService {
     @Transactional(readOnly = true)
     public List<TranslationDto> findTranslationByUserEmail(String userEmail) {
         return translationMapper.toTranslationDtoList(translationRepository.findTranslationByUserEmail(userEmail));
-//        return translationMapper.toTranslationDtoList(translationRepository.findByUser_UserEmail(userEmail));
     }
-
 
     /**
      * DB 내 모든 번역 이력을 반환하다.
@@ -104,7 +100,6 @@ public class TranslationService {
         return translationMapper.toTranslationDtoList(translationRepository.findAll());
     }
 
-
     /**
      * 특정 인덱스의 번역 이력을 삭제한다.
      **/
@@ -113,7 +108,12 @@ public class TranslationService {
         translationRepository.deleteById(translationNo);
     }
 
-
+    /**
+     * 번역 요청 정보를 결과 없이 DB에 저장한다.
+     *
+     * @return 해당 정보가 저장된 Translation 객체
+     * @throws EntityNotFoundException 잘못된 유저 정보가 포함됐을 경우 예외 처리
+     **/
     @Transactional
     public Translation saveTranslationWithoutResult(RequestTranslationDto requestTranslationDto) {
 

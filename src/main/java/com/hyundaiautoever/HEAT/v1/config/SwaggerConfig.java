@@ -34,17 +34,17 @@ public class SwaggerConfig {
     @Bean
     public Docket api(TypeResolver typeResolver) {
         return new Docket(DocumentationType.SWAGGER_2)
-            .additionalModels(
-                    typeResolver.resolve(LanguageDto.class),
-                    typeResolver.resolve(UserDto.class),
-                    typeResolver.resolve(TranslationDto.class),
-                    typeResolver.resolve(LoginResponseDto.class)
-            )
-            .groupName("HEAT-BACK")
-            .apiInfo(this.apiInfo())
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("com.hyundaiautoever.HEAT.v1.controller"))
-            .paths(PathSelectors.any())
-            .build();
+                .additionalModels(
+                        typeResolver.resolve(LanguageDto.class),
+                        typeResolver.resolve(UserDto.class),
+                        typeResolver.resolve(TranslationDto.class),
+                        typeResolver.resolve(LoginResponseDto.class)
+                )
+                .groupName("HEAT-BACK")
+                .apiInfo(this.apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.hyundaiautoever.HEAT.v1.controller"))
+                .paths(PathSelectors.any())
+                .build();
     }
 }

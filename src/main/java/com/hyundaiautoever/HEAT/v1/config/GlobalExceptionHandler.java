@@ -34,11 +34,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-//    @ExceptionHandler(NullPointerException.class)
-//    public ResponseEntity<String> handlerNullPointerException(AuthenticationException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
-
     @ExceptionHandler(TranslationNotCompleteException.class)
     public ResponseEntity<String> handlerTranslationNotCompleteException(TranslationNotCompleteException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

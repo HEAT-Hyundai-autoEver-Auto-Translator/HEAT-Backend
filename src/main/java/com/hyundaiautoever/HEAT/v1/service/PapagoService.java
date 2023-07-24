@@ -35,7 +35,12 @@ public class PapagoService {
     private final TranslationRepository translationRepository;
     private final LanguageService languageService;
 
-    @Async
+    /**
+     * 번역 요청 정보를 기반으로 파파고에 번역 결과를 비동기 방식으로 요청하고 결과를 DB에 저장한다.
+     *
+     * @param translationWithoutResult
+     **/
+    @Async //비동기로 처리되는 번역 결과 요청 API
     public void getPapagoResponseAndSave(Translation translationWithoutResult,
                                          RequestTranslationDto requestTranslationDto) {
         //OpenAPI 요청 전송 및 요청 결과 수신
@@ -44,6 +49,12 @@ public class PapagoService {
         saveCompleteResultTranslation(translationWithoutResult, papagoResponseDto);
     }
 
+    /**
+     * 번역 요청 정보를 기반으로 파파고에 해당 요청을 전송한다.
+     *
+     * @param requestTranslationDto
+     * @return papagoResponseDto Papago의 번역 결과를 Dto 객체로 변환한 결과 값
+     **/
     public PapagoResponseDto getPapagoResponseDto(RequestTranslationDto requestTranslationDto) {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -69,6 +80,13 @@ public class PapagoService {
         return papagoResponseDto;
     }
 
+    /**
+     * 번역 결과를 DB에 저장한다.
+     *
+     * @param translationWithoutResult,openAiResponseDto
+     * @return 저장된 translation 객체
+     * @throws EntityNotFoundException translationWithoutResult 가 잘못된 정보일 경우
+     **/
     @Transactional
     public Translation saveCompleteResultTranslation(Translation translationWithoutResult,
                                                      PapagoResponseDto papagoResponseDto) {
@@ -84,5 +102,4 @@ public class PapagoService {
 
         return translationRepository.save(fullRequestTranslation);
     }
-
 }

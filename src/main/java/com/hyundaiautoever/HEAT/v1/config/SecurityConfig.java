@@ -35,14 +35,14 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+                .and()
                 .authorizeRequests()
-                    .antMatchers(AUTH_LIST).permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/user").permitAll()
-                    .antMatchers("/api/user/login", "/api/user/login/google", "/api/user/refresh-token", "/api/language","/swagger-ui", "/swagger-ui/*").permitAll()
-                    .antMatchers("/api/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
-            .and()
+                .antMatchers(AUTH_LIST).permitAll()
+                .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+                .antMatchers("/api/user/login", "/api/user/login/google", "/api/user/refresh-token", "/api/language", "/swagger-ui", "/swagger-ui/*").permitAll()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
