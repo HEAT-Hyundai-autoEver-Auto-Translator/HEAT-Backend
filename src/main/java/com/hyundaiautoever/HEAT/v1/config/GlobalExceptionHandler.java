@@ -1,11 +1,9 @@
 package com.hyundaiautoever.HEAT.v1.config;
 
-import com.hyundaiautoever.HEAT.v1.Exception.TranslationNotCompleteException;
-import com.hyundaiautoever.HEAT.v1.entity.User;
+import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,11 +33,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handlerAuthenticationException(AuthenticationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
-
-//    @ExceptionHandler(NullPointerException.class)
-//    public ResponseEntity<String> handlerNullPointerException(AuthenticationException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
 
     @ExceptionHandler(TranslationNotCompleteException.class)
     public ResponseEntity<String> handlerTranslationNotCompleteException(TranslationNotCompleteException ex) {

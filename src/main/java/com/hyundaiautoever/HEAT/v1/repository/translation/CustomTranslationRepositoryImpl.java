@@ -15,15 +15,16 @@ public class CustomTranslationRepositoryImpl implements CustomTranslationReposit
 
     private final JPAQueryFactory queryFactory;
 
+    // 유저 번역 이력 탐색 쿼리
     @Transactional(readOnly = true)
     public List<Translation> findTranslationByUserEmail(String userEmail) {
 
         QTranslation translation = QTranslation.translation;
 
-        // QueryDSL 쿼리 작성
+        //QueryDSL 쿼리 작성
         List<Translation> userTranslationList = queryFactory
                 .selectFrom(translation)
-                .join(translation.user)
+                .join(translation.user).fetchJoin()
                 .where(translation.user.userEmail.eq(userEmail))
                 .fetch();
 

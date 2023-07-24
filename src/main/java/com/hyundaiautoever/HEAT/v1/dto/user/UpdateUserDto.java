@@ -1,13 +1,11 @@
 package com.hyundaiautoever.HEAT.v1.dto.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Setter
+@Builder
+@EqualsAndHashCode
 public class UpdateUserDto {
 
     private Long userAccountNo;

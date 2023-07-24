@@ -7,13 +7,13 @@ import org.hibernate.validator.constraints.Range;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Setter
+@Builder
+@EqualsAndHashCode
 public class CreateUserDto {
 
     @NotNull
     private String userEmail;
     @NotNull
-//    @Length(min = 8)
     private String password;
     @NotNull
     private String userName;

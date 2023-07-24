@@ -31,10 +31,8 @@ import java.util.Optional;
 @Slf4j
 public class LoginService {
 
-//    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
-//    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
-    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(5).toMillis();
-    private final long REFRESH_TOKEN_DURATION = Duration.ofMinutes(10).toMillis();
+    private final long ACCESS_TOKEN_DURATION = Duration.ofMinutes(30).toMillis();
+    private final long REFRESH_TOKEN_DURATION = Duration.ofDays(14).toMillis();
 
     private final UserRepository userRepository;
     private final LanguageRepository languageRepository;
@@ -44,6 +42,13 @@ public class LoginService {
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
 
+    /**
+     * 유저 이메일과 패스워드를 기반으로 DB에 있는 유저를 인증한다.
+     *
+     * @param loginDto
+     * @return 해당 유저의 UserDto 객체 반환
+     * @throws AuthenticationException 로그인 실패 시 AuthenticationException 처리
+     **/
     @Transactional(readOnly = true)
     public LoginResponseDto login(LoginDto loginDto) throws AuthenticationException {
 
@@ -54,6 +59,14 @@ public class LoginService {
     }
 
 
+    /**
+     * 구글 액세스 토큰으로 로그인을 지원한다.
+     * 구글 로그인을 통해 처음 서비스에 접근한 유저의 경우 구글 API를 통해 유저의 정보를 받아 DB에 저장한다.
+     * 구글 API 액세스 토큰을 받아오는 로직은 프론트에서 처리
+     *
+     * @param googleAccessToken
+     * @return 해당 유저의 UserDto 객체 반환
+     **/
     @Transactional
     public LoginResponseDto googleLogin(String googleAccessToken) throws IOException {
         //구글에서 유저 정보 받아오기
@@ -83,6 +96,13 @@ public class LoginService {
     }
 
 
+    /**
+     * 리프레시 토큰을 통해 새로운 액세스 토큰을 발급한다.
+     *
+     * @param refreshToken
+     * @return LoginResponseDto
+     * @throws JwtException 리프레시 토큰이 유효하지 않을 경우
+     **/
     public LoginResponseDto getAccessTokenWithRefreshToken(String refreshToken) {
         User user = jwtUtil.validateRefreshToken(refreshToken);
         if (user == null) {
@@ -92,15 +112,22 @@ public class LoginService {
     }
 
 
+    /**
+     * 유저 엔티티를 기반으로 LoginResponseDto를 생성한다.
+     * 로그인시 마다 액세스 토큰과 리프레시 토큰을 최신화 한다.
+     * 유저의 마지막 로그인 일자를 최신화한다.
+     *
+     * @param user
+     * @return 해당 유저의 LoginResponseDto 객체 반환
+     * @throws AuthenticationException 로그인 실패 시 AuthenticationException 처리
+     **/
     private LoginResponseDto getLoginResponseDto(User user) {
-        //유저에 대한 토큰 발급 후 리턴
-        //토큰 발급 및 refresh 토큰 저장
+        // 토큰 발급 및 refresh 토큰 저장
         String newAccessToken = jwtUtil.makeJwToken(user, ACCESS_TOKEN_DURATION);
         String newRefreshToken = jwtUtil.makeJwToken(user, REFRESH_TOKEN_DURATION);
-        user.updateLogin(newRefreshToken, LocalDate.now());
 
-        //lastAccess Date 수정
-//        user.setLastAccessDate(LocalDate.now());
+        // 유저의 리프레시 토큰 및 마지막 로그인 일자 업데이트
+        user.updateLogin(newRefreshToken, LocalDate.now());
 
         // loginResponseDto 생성
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()

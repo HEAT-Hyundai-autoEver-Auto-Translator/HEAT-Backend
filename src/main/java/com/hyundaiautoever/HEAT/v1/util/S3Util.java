@@ -43,8 +43,8 @@ public class S3Util {
         String uploadImageUrl = putImageOnS3(uploadFile, fileName);
         // 로컬 임시 저장 File 삭제
         uploadFile.delete();
-
-        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
+        // 업로드된 파일의 S3 URL 주소 반환
+        return uploadImageUrl;
     }
 
 

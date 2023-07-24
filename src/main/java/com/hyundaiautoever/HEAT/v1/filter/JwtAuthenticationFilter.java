@@ -34,19 +34,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEntity != null) {
                 Authentication authentication = getAuthentication(accessToken, userEntity);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             }
+        } else {
+            // 토큰이 제공되지 않았을 경우
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token provided");
         }
         filterChain.doFilter(request, response);
     }
 
+    // Authentication 발급 메소드
     private Authentication getAuthentication(String jwToken, com.hyundaiautoever.HEAT.v1.entity.User userEntity) {
         UserDetails userDetails = User.withUsername(userEntity.getUserName())
-                .password("password")
+                .password("password")   // Jwt 방식 인증으로 패스워드는 사용 하지 않음, 현재 임시값 'password' 적용
                 .roles(userEntity.getUserRole().toString().toUpperCase())
                 .build();
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
+    //액세스 토큰 파싱 메소드
     private String parseAccessToken(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization");
         if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")) {
