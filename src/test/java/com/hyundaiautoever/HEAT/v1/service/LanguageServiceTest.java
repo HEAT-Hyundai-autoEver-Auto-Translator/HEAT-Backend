@@ -64,9 +64,7 @@ class LanguageServiceTest {
     public void testDetectLanguageType() {
         //Arrange
         RequestTranslationDto requestTranslationDto = new RequestTranslationDto();
-        // requestTranslationDto에 필요한 데이터를 설정하세요.
         requestTranslationDto.setRequestText("안녕하세요");
-
         when(languageRepository.findByLanguageCode(anyString())).thenReturn(language1);
 
         //Act
