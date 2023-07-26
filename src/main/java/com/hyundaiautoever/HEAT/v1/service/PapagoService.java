@@ -77,6 +77,10 @@ public class PapagoService {
                 .retrieve()
                 .bodyToMono(PapagoResponseDto.class)
                 .block();
+
+        if (papagoResponseDto == null || papagoResponseDto.getMessage() == null) {
+            throw new IllegalStateException("Papago API 호출 실패");
+        }
         return papagoResponseDto;
     }
 

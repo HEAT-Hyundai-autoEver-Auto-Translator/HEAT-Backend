@@ -4,7 +4,7 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Builder
+@Setter
 @EqualsAndHashCode
 public class UpdateUserDto {
 

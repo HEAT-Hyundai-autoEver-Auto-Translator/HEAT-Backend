@@ -7,7 +7,8 @@ import org.hibernate.validator.constraints.Range;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Builder
+@Setter
+//@Builder
 @EqualsAndHashCode
 public class CreateUserDto {
 

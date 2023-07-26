@@ -1,5 +1,6 @@
 package com.hyundaiautoever.HEAT.v1.service;
 
+import com.hyundaiautoever.HEAT.v1.entity.Language;
 import com.hyundaiautoever.HEAT.v1.exception.TranslationNotCompleteException;
 import com.hyundaiautoever.HEAT.v1.dto.translation.RequestTranslationDto;
 import com.hyundaiautoever.HEAT.v1.dto.translation.TranslationDto;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
@@ -46,6 +48,11 @@ public class TranslationService {
 
         // 번역 요청 정보 ResultText 칼럼 제외하고 DB에 저장
         Translation translationWithoutResult = saveTranslationWithoutResult(requestTranslationDto);
+
+        // 요청언어와 결과언어가 같을 경우 요청 텍스트를 그대로 DB에 저장 및 별도의 API 요청 미발송
+        if (StringUtils.hasText(translationWithoutResult.getResultText())) {
+            return translationWithoutResult.getTranslationNo();
+        }
 
         //요청 언어 결과 언어 요청 페어에 따라 파파고, OpenAI 분기 처리
         if (languageService.isPapagoSupported(translationWithoutResult)) {
@@ -117,15 +124,24 @@ public class TranslationService {
     @Transactional
     public Translation saveTranslationWithoutResult(RequestTranslationDto requestTranslationDto) {
 
+        if (!StringUtils.hasText(requestTranslationDto.getRequestText())) {
+            throw new TranslationNotCompleteException("요청 텍스트가 비어있습니다.");
+        }
+        Language requestLanguage = languageService.detectLanguageType(requestTranslationDto);
+        Language resultLanguage = languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName());
+
         Timestamp createDateTime = new Timestamp(System.currentTimeMillis());
         Translation emptyRequstTranslation = Translation.builder()
                 .user(userRepository.findByUserAccountNo(requestTranslationDto.getUserAccountNo())
                         .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 정보입니다.")))
-                .requestLanguage(languageService.detectLanguageType(requestTranslationDto))
-                .resultLanguage(languageRepository.findByLanguageName(requestTranslationDto.getResultLanguageName()))
+                .requestLanguage(requestLanguage)
+                .resultLanguage(resultLanguage)
                 .createDatetime(createDateTime)
                 .requestText(requestTranslationDto.getRequestText())
                 .build();
+        if (resultLanguage == resultLanguage) {
+            emptyRequstTranslation.setTranslationResult(requestTranslationDto.getRequestText());
+        }
         return translationRepository.save(emptyRequstTranslation);
     }
 }

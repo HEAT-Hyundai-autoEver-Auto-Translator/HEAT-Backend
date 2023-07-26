@@ -4,15 +4,12 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 import javax.ws.rs.CookieParam;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "translation", indexes = @Index(name = "idx_user_account_no", columnList = "user_account_no"))
 public class Translation {
 

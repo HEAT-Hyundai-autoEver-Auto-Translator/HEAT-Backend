@@ -17,10 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.persistence.EntityNotFoundException;
 import javax.security.sasl.AuthenticationException;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -78,6 +80,11 @@ public class OpenAIService {
                 .retrieve()
                 .bodyToMono(OpenAIResponseDto.class)
                 .block();
+
+        if (openAiResponseDto == null || openAiResponseDto.getChoices().get(0).getMessage().getContent() == null) {
+            throw new IllegalStateException("OpenAI API 호출 실패");
+        }
+
         return openAiResponseDto;
     }
 

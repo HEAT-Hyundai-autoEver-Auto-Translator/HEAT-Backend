@@ -37,9 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             }
-        } else {
-            // 토큰이 제공되지 않았을 경우
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token provided");
         }
         filterChain.doFilter(request, response);
     }

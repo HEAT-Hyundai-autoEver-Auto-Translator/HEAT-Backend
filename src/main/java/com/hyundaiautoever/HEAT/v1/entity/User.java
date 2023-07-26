@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user", indexes = @Index(name = "idx_user_email", columnList = "user_email"))
 public class User {
 
