@@ -69,8 +69,8 @@ public class UserControllerTest {
         loginDto.setUserPassword("1234567891");
 
         adminUpdateUserDto = new AdminUpdateUserDto();
-                adminUpdateUserDto.setUserAccountNo(1L);
-                adminUpdateUserDto.setUserRole("admin");
+        adminUpdateUserDto.setUserAccountNo(1L);
+        adminUpdateUserDto.setUserRole("admin");
 
         loginResponseDto = LoginResponseDto.builder()
                 .userAccountNo(1L)
@@ -89,12 +89,11 @@ public class UserControllerTest {
                 .signupDate(LocalDate.now())
                 .build();
 
-        createUserDto = CreateUserDto.builder()
-                .userEmail("test@example.com")
-                .password("password")
-                .userName("userName")
-                .languageName("English")
-                .build();
+        createUserDto = new CreateUserDto();
+        createUserDto.setUserEmail("test@example.com");
+        createUserDto.setPassword("password");
+        createUserDto.setUserName("userName");
+        createUserDto.setLanguageName("English");
     }
 
     @DisplayName("login 메소드 테스트")

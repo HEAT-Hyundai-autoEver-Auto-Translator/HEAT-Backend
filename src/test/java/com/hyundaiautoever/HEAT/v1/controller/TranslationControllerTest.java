@@ -51,7 +51,6 @@ class TranslationControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(translationController).build();
 
         user = User.builder()
-                .userAccountNo(1L)
                 .userEmail("user1@example.com")
                 .passwordHash("password1")
                 .userName("User1")
@@ -61,7 +60,6 @@ class TranslationControllerTest {
                 .build();
 
         translation = Translation.builder()
-                .translationNo(1L)
                 .user(user)
                 .requestLanguage(new Language())
                 .resultLanguage(new Language())

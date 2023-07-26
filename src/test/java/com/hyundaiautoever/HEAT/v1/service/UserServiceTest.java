@@ -100,23 +100,21 @@ class UserServiceTest {
         language.setLanguageName("English");
         language.setLanguageNo(2);
 
-        createUserDto = CreateUserDto.builder()
-                .userEmail("test@example.com")
-                .password("password")
-                .userName("userName")
-                .languageName("English")
-                .build();
+        createUserDto = new CreateUserDto();
+        createUserDto.setUserEmail("test@example.com");
+        createUserDto.setPassword("password");
+        createUserDto.setUserName("userName");
+        createUserDto.setLanguageName("English");
 
-        updateUserDto = UpdateUserDto.builder()
-                .userAccountNo(2L)
-                .password("updatedPassword")
-                .userName("updatedUserName")
-                .languageName("English")
-                .build();
+        updateUserDto = new UpdateUserDto();
+        updateUserDto.setUserAccountNo(2L);
+        updateUserDto.setPassword("updatedPassword");
+        updateUserDto.setUserName("updatedUserName");
+        updateUserDto.setLanguageName("English");
 
         adminUpdateUserDto = new AdminUpdateUserDto();
-                adminUpdateUserDto.setUserAccountNo(1L);
-                adminUpdateUserDto.setUserRole("admin");
+        adminUpdateUserDto.setUserAccountNo(1L);
+        adminUpdateUserDto.setUserRole("admin");
 
         userProfileImage = Optional.of(new MockMultipartFile("userProfileImage", new byte[0]));
     }
