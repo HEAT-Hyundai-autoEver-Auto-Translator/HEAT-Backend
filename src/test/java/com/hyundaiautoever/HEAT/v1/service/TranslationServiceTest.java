@@ -111,8 +111,9 @@ class TranslationServiceTest {
                     .build();
 
             when(userRepository.findByUserAccountNo(1L)).thenReturn(Optional.of(user1));
-            when(languageRepository.findByLanguageName(anyString())).thenReturn(requestLanguage);
+            when(languageRepository.findByLanguageName(anyString())).thenReturn(resultLanguage);
             when(translationRepository.save(any())).thenReturn(translationWithoutResult);
+            when(languageService.detectLanguageType(any())).thenReturn(requestLanguage);
 
             // Act
             Long translationNo = translationService.requestTranslation(requestTranslationDto);
@@ -138,8 +139,9 @@ class TranslationServiceTest {
                     .build();
 
             when(userRepository.findByUserAccountNo(1L)).thenReturn(Optional.of(user1));
-            when(languageRepository.findByLanguageName(anyString())).thenReturn(requestLanguage);
+            when(languageRepository.findByLanguageName(anyString())).thenReturn(resultLanguage);
             when(translationRepository.save(any())).thenReturn(translationWithoutResult);
+            when(languageService.detectLanguageType(any())).thenReturn(resultLanguage);
 
             // Act
             Long translationNo = translationService.requestTranslation(requestTranslationDto);

@@ -84,12 +84,12 @@ class LoginServiceTest {
     void testGoogleLogin() throws IOException {
         // Arrange
         String googleAccessToken = "fakeAccessToken";
-        when(googleUtil.getUserInfo(googleAccessToken)).thenReturn(GoogleResponseDto.builder()
-                .email("test@example.com")
-                .name("test")
-                .picture("image-url")
-                .locale("ru")
-                .build());
+        GoogleResponseDto googleResponseDto = new GoogleResponseDto();
+        googleResponseDto.setEmail("test@example.com");
+        googleResponseDto.setName("test");
+        googleResponseDto.setPicture("image-url");
+        googleResponseDto.setLocale("ru");
+        when(googleUtil.getUserInfo(googleAccessToken)).thenReturn(googleResponseDto);
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(user1);
 
