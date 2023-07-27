@@ -8,7 +8,8 @@ env:
   CODE_DEPLOY_DEPLOYMENT_GROUP: heat-backend-deploy-group
   
 on:
-   pull_request:
+#    pull_request:
+    push:
     branches:
       - 'main'
 
