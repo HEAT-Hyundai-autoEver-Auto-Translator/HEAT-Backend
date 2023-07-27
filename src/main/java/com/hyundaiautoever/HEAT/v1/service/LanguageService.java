@@ -100,6 +100,9 @@ public class LanguageService {
             resultLanguageCode = "en";
         }
         Language language = languageRepository.findByLanguageCode(resultLanguageCode);
+        if (language == null) {
+            language = languageRepository.findByLanguageCode("en");
+        }
         return language;
     }
 

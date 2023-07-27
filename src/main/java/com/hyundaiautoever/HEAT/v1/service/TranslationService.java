@@ -51,6 +51,7 @@ public class TranslationService {
 
         // 요청언어와 결과언어가 같을 경우 요청 텍스트를 그대로 DB에 저장 및 별도의 API 요청 미발송
         if (StringUtils.hasText(translationWithoutResult.getResultText())) {
+            log.error("여기 실행");
             return translationWithoutResult.getTranslationNo();
         }
 
@@ -139,7 +140,8 @@ public class TranslationService {
                 .createDatetime(createDateTime)
                 .requestText(requestTranslationDto.getRequestText())
                 .build();
-        if (resultLanguage == resultLanguage) {
+        if (resultLanguage.getLanguageName().equals(requestLanguage.getLanguageName())) {
+            log.info("요청언어와 결과언어가 같을 때");
             emptyRequstTranslation.setTranslationResult(requestTranslationDto.getRequestText());
         }
         return translationRepository.save(emptyRequstTranslation);
